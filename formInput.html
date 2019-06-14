@@ -1,0 +1,19 @@
+<input type="text" oninput="inExp.target.setValue(value)">
+<button onclick="inExp.target.printValue()">打印</button>
+<textarea id="textContainer"></textarea>
+<style>
+    #textContainer {
+        width: 200px;
+        height: 200px;
+        display: block;
+    }
+</style>
+<script>
+    const textContainer = document.querySelector("#textContainer");
+    inExp.target = {
+        value: "",
+        setValue: x => this.value = x,
+        printValue: () => textContainer.textContent += this.value
+    };
+
+</script>
