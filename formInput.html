@@ -1,19 +1,48 @@
-<input type="text" oninput="inExp.target.setValue(value)">
-<button onclick="inExp.target.printValue()">打印</button>
-<textarea id="textContainer"></textarea>
+<input class="in-input inexp" type="text" oninput="inExp.target.setValue(value)">
+<button class="in-btn" onclick="inExp.target.printValue()">打印</button>
+<textarea id="textContainer" class="inexp"></textarea>
 <style>
     #textContainer {
         width: 200px;
         height: 200px;
         display: block;
+        margin: 10px;
+        border-radius: 4px;
     }
+
+    .in-input{
+        color: rgba(0, 0, 0, 0.65);
+        background: #FFF;
+        line-height: 1.5;
+        border-radius: 4px;
+        border: 1px solid #d9d9d9;
+        margin: 10px;
+        height: 40px;
+        padding-left:10px;
+        line-height: 40px;
+        width: 200px;
+    }
+    
+    .in-btn{
+        background: #1890ff;
+        border: none;
+        margin: 10px;
+        color: white;
+        font-size: 14px;
+        height: 40px;
+        padding: 0 10px;
+    }
+
+    .inexp{
+        border: 1px solid #d9d9d9;
+    }
+
 </style>
 <script>
     const textContainer = document.querySelector("#textContainer");
     inExp.target = {
         value: "",
         setValue: x => this.value = x,
-        printValue: () => textContainer.textContent += this.value
+        printValue: () => textContainer.textContent += this.value+"\n"
     };
-
 </script>
