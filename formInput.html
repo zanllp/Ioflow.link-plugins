@@ -1,47 +1,170 @@
-<input class="in-input inexp" type="text" oninput="inExp.target.setValue(value)">
-<button class="in-btn" onclick="inExp.target.printValue()">打印</button>
-<textarea id="textContainer" class="inexp"></textarea>
+<div class="in-tab">
+    <div class="tab-btnBar">
+        <button id="tabBtn-0" class="in-btn in-btn-selected" onclick="inExp.tab.setTabSelected(0)">手动输入</button>
+        <button id="tabBtn-1" class="in-btn" onclick="inExp.tab.setTabSelected(1);">随机数生成</button>
+    </div>
+    <div class="in-cont" style="display: inline-block;background: white">
+        <div id="in-panel0">
+            <input class="in-input in-cont" type="text" oninput="inExp.input.setValue(value)">
+            <button class="in-btn in-btn-primary" onclick="inExp.input.printValue()">打印</button>
+        </div>
+        <div id="in-panel1" style="display: none">
+            <input class="in-input in-cont" type="number" placeholder="输入上限"
+                onchange="inExp.rand.highLimit=Number(value)" />
+            <input class="in-input in-cont" type="number" placeholder="输入下限"
+                onchange="inExp.rand.lowLimit=Number(value)" />
+            <button class="in-btn in-btn-primary" onclick="inExp.rand.printValue()">获取一个值</button>
+            <div style="display:block;border: none">
+                <div style="margin: 10px;"> 定时调用</div>
+                <input class="in-input in-cont" type="number" placeholder="输入时间间隔(ms)"
+                    onchange="inExp.rand.timeout=Number(value)" />
+                <button class="in-btn" id="timerChange" onclick="inExp.rand.timerChange()">开始</button>
+            </div>
+        </div>
+        <textarea id="textContainer" class="in-cont" readonly></textarea>
+    </div>
+</div>
+
 <style>
     #textContainer {
-        width: 200px;
-        height: 200px;
+        width: calc(100%*0.8);
+        min-height: 200px;
         display: block;
-        margin: 10px;
-        border-radius: 4px;
+        padding: 10px;
     }
 
-    .in-input{
+    .in-tab {
+        background: #f0f2f5;
+    }
+
+    .in-input {
         color: rgba(0, 0, 0, 0.65);
         background: #FFF;
         line-height: 1.5;
-        border-radius: 4px;
-        margin: 10px;
         height: 40px;
-        padding-left:10px;
+        padding-left: 10px;
         line-height: 40px;
         width: 200px;
     }
-    
-    .in-btn{
-        background: #1890ff;
+
+    .in-btn {
         border: none;
         margin: 10px;
         color: white;
         font-size: 14px;
         height: 40px;
-        padding: 0 10px;
-    }
-
-    .inexp{
+        padding: 0 20px;
+        border-radius: 4px;
+        color: rgba(0, 0, 0, 0.65);
+        background: #FFF;
         border: 1px solid #d9d9d9;
     }
 
+    .in-btn:focus {
+        outline: none;
+    }
+
+    .in-btn-primary {
+        background: #1890ff;
+        color: #FFF;
+    }
+
+    @keyframes beats {
+        100% {
+            box-shadow: #1890ff 0 0 80px;
+        }
+
+        50% {
+            box-shadow: #1890ff 0 0 2px;
+        }
+
+        0% {
+            box-shadow: #1890ff 0 0 80px;
+        }
+    }
+
+    .in-beatsAnimation {
+        animation: beats infinite 3s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+        /**https://easings.net.*/
+        border: 1px solid #1890ff;
+        color: #1890ff;
+    }
+
+    .in-btn-selected {
+        border: 1px solid #1890ff;
+        color: #1890ff;
+        box-shadow: #1890ff 0 0 4px;
+    }
+
+    /*Container*/
+    .in-cont {
+        border: 1px solid #d9d9d9;
+        margin: 10px;
+        border-radius: 4px;
+    }
+
+    .in-input:hover {
+        border: 1px solid #1890ff;
+        color: #1890ff;
+        box-shadow: 0 0 4px;
+        transition: all .3s;
+    }
+
+    .in-btn:hover {
+        background: #1890ff;
+        color: #FFF;
+        transition: all .3s;
+
+    }
 </style>
 <script>
-    const textContainer = document.querySelector("#textContainer");
-    inExp.target = {
-        value: "",
-        setValue: x => this.value = x,
-        printValue: () => textContainer.textContent += this.value+"\n"
-    };
+    
+    // ioflow.link自带babel，可以这么写
+    inExp.tab = new class {
+        tabSelected = 0;
+        panelIds = ["in-panel0", "in-panel1"];
+        setTabSelected = select => {
+            document.querySelector(`#tabBtn-${this.tabSelected}`).classList.remove(["in-btn-selected"]);
+            document.querySelector(`#tabBtn-${select}`).classList.add(["in-btn-selected"]);
+            this.tabSelected = select;
+            this.panelIds.forEach(x => document.querySelector(`#${x}`).setStyles({ display: "none" }))
+            document.querySelector(`#in-panel${select}`).setStyles({ display: "block" });
+        }
+    }();
+    inExp.input = new class {
+        value = "";
+        textContainer = document.querySelector("#textContainer");
+        setValue = value => this.value = value;
+        printValue = () => {
+            inExp.publish.publish(this.value);
+            textContainer.textContent += this.value + "\n";
+            textContainer.scrollTop = textContainer.scrollHeight;
+        }
+    }();
+    inExp.rand = new class {
+        highLimit = 10;
+        lowLimit = 0;
+        textContainer = document.querySelector("#textContainer");
+        getRes = () => this.lowLimit + (Math.random()) * (this.highLimit - this.lowLimit);
+        printValue = () => {
+            const value = this.getRes().toFixed(2);
+            inExp.publish.publish(value);// 发布，把值往下传
+            textContainer.textContent += value + "\n";
+            textContainer.scrollTop = textContainer.scrollHeight;
+        }
+        interval = -1;
+        timeout = 1000;
+        timerChange = () => {
+            const statusDom = document.querySelector("#timerChange");
+            if (statusDom.textContent === "开始") {
+                statusDom.textContent = "暂停";
+                this.interval = setInterval(this.printValue, this.timeout);
+                statusDom.classList.add(["in-beatsAnimation"]);
+            } else {
+                statusDom.textContent = "开始";
+                clearInterval(this.interval);
+                statusDom.classList.remove(["in-beatsAnimation"]);
+            }
+        };
+    }();
 </script>
