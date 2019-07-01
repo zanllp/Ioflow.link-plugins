@@ -115,57 +115,62 @@
         background: #1890ff;
         color: #FFF;
         transition: all .3s;
-
     }
 </style>
 <script>
-
-    // ioflow.link自带babel，可以这么写
-    inExp.tab = new class {
+    class Tab {
         tabSelected = 0;
         panelIds = ["in-panel0", "in-panel1"];
-        setTabSelected = select => {
+        setTabSelected(select) {
             document.querySelector(`#tabBtn-${this.tabSelected}`).classList.remove(["in-btn-selected"]);
             document.querySelector(`#tabBtn-${select}`).classList.add(["in-btn-selected"]);
             this.tabSelected = select;
             this.panelIds.forEach(x => document.querySelector(`#${x}`).setStyles({ display: "none" }))
             document.querySelector(`#in-panel${select}`).setStyles({ display: "block" });
         }
-    }();
-    inExp.input = new class {
+    }
+    class Input {
         value = "";
         textContainer = document.querySelector("#textContainer");
-        setValue = value => this.value = value;
-        printValue = () => {
+        setValue(value) {
+            this.value = value;
+        }
+        printValue() {
             inExp.publish.publish(this.value);
             textContainer.textContent += this.value + "\n";
             textContainer.scrollTop = textContainer.scrollHeight;
         }
-    }();
-    inExp.rand = new class {
+    }
+    class Rand {
         highLimit = 10;
         lowLimit = 0;
         textContainer = document.querySelector("#textContainer");
-        getRes = () => this.lowLimit + (Math.random()) * (this.highLimit - this.lowLimit);
-        printValue = () => {
+        getRes() {
+            return this.lowLimit + (Math.random()) * (this.highLimit - this.lowLimit);
+        }
+        printValue() {
             const value = this.getRes().toFixed(2);
-            inExp.publish.publish(value);// 发布，把值往下传
+            inExp.publish.publish({value:value});// 发布，把值往下传
             textContainer.textContent += value + "\n";
             textContainer.scrollTop = textContainer.scrollHeight;
         }
         interval = -1;
         timeout = 1000;
-        timerChange = () => {
+        timerChange() {
             const statusDom = document.querySelector("#timerChange");
             if (statusDom.textContent === "开始") {
                 statusDom.textContent = "暂停";
-                this.interval = setInterval(this.printValue, this.timeout);
+                this.interval = setInterval(() => this.printValue(), this.timeout);
                 statusDom.classList.add(["in-beatsAnimation"]);
             } else {
                 statusDom.textContent = "开始";
                 clearInterval(this.interval);
                 statusDom.classList.remove(["in-beatsAnimation"]);
+
             }
         };
-    }();
+    }
+    inExp.tab = new Tab();
+    inExp.input = new Input();
+    inExp.rand = new Rand();
 </script>
