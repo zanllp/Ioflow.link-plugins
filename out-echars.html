@@ -1,19 +1,13 @@
 <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts-en.common.js"></script>
-<div id="main" style="width: 600px;height:400px;"></div>
+<div class="container" style="width: 600px;height:400px;"></div>
 <script>
     // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
+    var myChart = echarts.init(outExp.dom.querySelector(".container"));
     var base = +new Date(2019, 9, 3);
     var oneDay = 24 * 3600 * 1000;
     var date = [];
 
-    var data = [Math.random() * 300];
-
-    for (var i = 1; i < 2000; i++) {
-        //var now = new Date(base += oneDay);
-        //date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
-        // data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
-    }
+    var data = [];
 
     var option = {
         tooltip: {
@@ -79,11 +73,11 @@
 
 
 
-    outExp.publish.func = x => {
+    publish.accept = x => {
         var now = new Date(base += oneDay);
         date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
         data.push(Number(x.value));
         myChart.setOption(option)
     }
-   
+
 </script>
