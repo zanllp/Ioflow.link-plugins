@@ -125,8 +125,8 @@
             document.querySelector(`#tabBtn-${this.tabSelected}`).classList.remove(["in-btn-selected"]);
             document.querySelector(`#tabBtn-${select}`).classList.add(["in-btn-selected"]);
             this.tabSelected = select;
-            this.panelIds.forEach(x => document.querySelector(`#${x}`).setStyles({ display: "none" }))
-            document.querySelector(`#in-panel${select}`).setStyles({ display: "block" });
+            this.panelIds.forEach(x => document.querySelector(`#${x}`).setStyle({ display: "none" }))
+            document.querySelector(`#in-panel${select}`).setStyle({ display: "block" });
         }
     }
     class Input {
@@ -136,7 +136,7 @@
             this.value = value;
         }
         printValue() {
-            inExp.publish.publish(this.value);
+            publish.push({ value:this.value });
             textContainer.textContent += this.value + "\n";
             textContainer.scrollTop = textContainer.scrollHeight;
         }
@@ -150,7 +150,7 @@
         }
         printValue() {
             const value = this.getRes().toFixed(2);
-            inExp.publish.publish({value:value});// 发布，把值往下传
+            publish.push({ value });// 发布，把值往下传
             textContainer.textContent += value + "\n";
             textContainer.scrollTop = textContainer.scrollHeight;
         }

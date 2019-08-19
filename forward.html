@@ -1,0 +1,40 @@
+<button class="in-btn">延迟测试</button>
+<textarea style="margin: 10px;height: 400px;width: 400px;"></textarea>
+<style>
+    .in-btn {
+        cursor: pointer;
+        border: none;
+        margin: 10px;
+        color: white;
+        font-size: 14px;
+        height: 40px;
+        padding: 0 20px;
+        border-radius: 4px;
+        color: rgba(0, 0, 0, 0.65);
+        background: #FFF;
+        border: 1px solid #d9d9d9;
+    }
+</style>
+<script>
+    let num = 0;
+    let last_time = Date.now();
+    let start_tome = Date.now();
+    const textArea = dom.querySelector("textarea");
+    io.getSocket("DEMklCpusCJodnaF").then(s => {
+        console.info(io);
+        s.on('data', (data) => {
+            textArea.textContent += JSON.stringify(data) + "\n";
+            textArea.scrollTop = textArea.scrollHeight;
+        })
+    })
+    const btn = dom.querySelector(".in-btn");
+    btn.addEventListener('click', () => {
+        for (let index = 0; index < 1; index++) {
+            fetch(`http://127.0.0.1:7001/socket/push?descriptor=DEMklCpusCJodnaF`, {
+                headers: { 'content-type': 'application/json' },
+                method: 'POST',
+                body: JSON.stringify({ text: 'hello world', type: '延迟测试', time: Date.now() })
+            })
+        }
+    })
+</script>
