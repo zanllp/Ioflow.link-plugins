@@ -1,6 +1,35 @@
-<button class="in-btn">延迟测试</button>
-<textarea style="margin: 10px;height: 400px;width: 400px;"></textarea>
+<div class="socket">
+    <div>
+        <button id="open-socket" class="in-btn in-btn-primary">连接</button>
+        <input id="socket-desc" class="in-input in-cont" placeholder="输入描述符后连接" type="text">
+    </div>
+    <div>
+        <button id="create-socket" class="in-btn">新建描述符</button>
+    </div>
+</div>
+
 <style>
+    .socket {
+        background: #f0f2f5;
+        padding: 8px;
+    }
+
+    .in-input {
+        color: rgba(0, 0, 0, 0.65);
+        background: #FFF;
+        line-height: 1.5;
+        height: 40px;
+        padding-left: 10px;
+        line-height: 40px;
+        width: 200px;
+    }
+
+    .in-cont {
+        border: 1px solid #d9d9d9;
+        margin: 10px;
+        border-radius: 4px;
+    }
+
     .in-btn {
         cursor: pointer;
         border: none;
@@ -14,27 +43,39 @@
         background: #FFF;
         border: 1px solid #d9d9d9;
     }
+
+    .in-input:hover {
+        border: 1px solid #1890ff;
+        color: #1890ff;
+        box-shadow: 0 0 4px;
+        transition: all .3s;
+    }
+
+    .in-btn:hover {
+        background: #1890ff;
+        color: #FFF;
+        transition: all .3s;
+    }
+
+    .in-btn-primary {
+        background: #1890ff;
+        color: #FFF;
+    }
+
+    .in-btn:focus {
+        outline: none;
+    }
 </style>
 <script>
-    let num = 0;
-    let last_time = Date.now();
-    let start_tome = Date.now();
-    const textArea = dom.querySelector("textarea");
-    io.getSocket("DEMklCpusCJodnaF").then(s => {
-        console.info(io);
-        s.on('data', (data) => {
-            textArea.textContent += JSON.stringify(data) + "\n";
-            textArea.scrollTop = textArea.scrollHeight;
-        })
+    io.ondata = x => push(x);
+    const $ = x => document.querySelector(x);
+    $("#open-socket").addEventListener('click', () => {
+        io.initSocket($("#socket-desc").value).then(() => $("#open-socket").innerText = "已连接")
+    }).catch(err => alert(err.message))
+    $("#create-socket").addEventListener('click', () => {
+        io.createSocketDesc().then(desc => {
+            $("#socket-desc").value = desc;
+        }).catch(err => alert(err.message))
     })
-    const btn = dom.querySelector(".in-btn");
-    btn.addEventListener('click', () => {
-        for (let index = 0; index < 1; index++) {
-            fetch(`http://127.0.0.1:7001/socket/push?descriptor=DEMklCpusCJodnaF`, {
-                headers: { 'content-type': 'application/json' },
-                method: 'POST',
-                body: JSON.stringify({ text: 'hello world', type: '延迟测试', time: Date.now() })
-            })
-        }
-    })
+
 </script>
