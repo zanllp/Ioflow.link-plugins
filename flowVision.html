@@ -5,6 +5,9 @@
         <span>
             自动滚动：<input type="checkbox" checked="checked">
         </span>
+        <span style="margin-left: 16px">
+            缩进：<input type="number" value="0">
+        </span>
     </div>
 </div>
 <style>
@@ -31,19 +34,31 @@
         padding: 8px 16px;
         border-radius: 4px;
         word-break: break-all;
+        white-space: pre;
     }
 
     #flowContainer .flow-item:nth-child(odd) {
         background: gray;
         color: white;
     }
+
+    #flowContainer input[type="number"] {
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        padding-left: 8px;
+    }
 </style>
 <script>
     let autoScroll = true;
     document.querySelector('#flowContainer input[type="checkbox"]').addEventListener('change', x => autoScroll = x.target.checked);
+    let space = 0;
+    document.querySelector('#flowContainer input[type="number"]').addEventListener('change', x => {
+        space = Number(x.target.value);
+    });
     const containerEle = document.querySelector("#flowContainer .flow-warp");
     let count = 0;
     const addItem = text => {
+        console.info(space)
         const item = document.createElement("li");
         item.className = "flow-item";
         item.innerText = `${++count}: ${text};`
@@ -52,5 +67,6 @@
             containerEle.scrollTop = containerEle.scrollHeight;
         }
     }
-    publish.accept = x => addItem(JSON.stringify(x));
+    publish.accept = x => addItem(JSON.stringify(x, null,space))
+    
 </script>
