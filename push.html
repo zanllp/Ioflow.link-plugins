@@ -1,0 +1,116 @@
+<div class="socket">
+    <div>自动推送
+        <button id="open-push" class="in-btn in-btn-primary">开启</button>
+        <input id="push-desc" class="in-input in-cont" placeholder="输入描述符后开始" type="text">
+    </div>
+    <div id="socket-hint">
+
+    </div>
+</div>
+
+<style>
+    .socket {
+        background: #f0f2f5;
+        padding: 8px;
+    }
+
+    .in-input {
+        color: rgba(0, 0, 0, 0.65);
+        background: #FFF;
+        line-height: 1.5;
+        height: 40px;
+        padding-left: 10px;
+        line-height: 40px;
+        width: 200px;
+    }
+
+    .in-cont {
+        border: 1px solid #d9d9d9;
+        margin: 10px;
+        border-radius: 4px;
+    }
+
+    .in-btn {
+        cursor: pointer;
+        border: none;
+        margin: 10px;
+        color: white;
+        font-size: 14px;
+        height: 40px;
+        padding: 0 20px;
+        border-radius: 4px;
+        color: rgba(0, 0, 0, 0.65);
+        background: #FFF;
+        border: 1px solid #d9d9d9;
+    }
+
+    .in-input:hover {
+        border: 1px solid #1890ff;
+        color: #1890ff;
+        box-shadow: 0 0 4px;
+        transition: all .3s;
+    }
+
+    .in-btn:hover {
+        background: #1890ff;
+        color: #FFF;
+        transition: all .3s;
+    }
+
+    .in-btn-primary {
+        background: #1890ff;
+        color: #FFF;
+    }
+
+    .in-btn:focus {
+        outline: none;
+    }
+
+    .socket-hint {
+        margin: 8px;
+    }
+</style>
+<script>
+    const $ = x => document.querySelector(x);
+    const flushHint = () => $("#socket-hint").innerText = `当前最大速度${io.maxSpeed ? io.maxSpeed : 3000}ms每次，超过的流会被忽略`;
+    const getDesc = () => $("#push-desc").value;
+    let autoPush = false;
+    let lastPush = 0;
+    $("#open-push").addEventListener('click', () => {
+        autoPush = !autoPush;
+        if (autoPush) {
+            const desc = getDesc();
+            if (!desc || desc.length === 0) {
+                alert('描述符必填,可以通过流推送接收组件获取');
+                autoPush = false;
+            }
+        }
+        $("#open-push").innerText = autoPush ? "关闭" : "开启";
+        flushHint();
+    })
+    publish.accept = x => {
+        if (!autoPush) {
+            return;
+        }
+        const desc = getDesc();
+        if (!desc || desc.length === 0) {
+            return;
+        }
+        if (io.maxSpeed === undefined) {
+            io.maxSpeed = 3000;
+        }
+        if (Date.now - lastPush < io.maxSpeed) {
+            return;
+        }
+        flushHint();
+        fetch(`https://api.zanllp.cn/socket/push?descriptor=${desc}`, {
+            body: JSON.stringify(x),
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            credentials: 'include',
+        })
+        lastPush = Date.now();
+    }
+
+
+</script>
