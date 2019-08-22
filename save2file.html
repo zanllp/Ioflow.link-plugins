@@ -1,0 +1,67 @@
+<div style="background-color: white">
+    <button id="save2file" class="in-btn in-btn-primary">保存到本地</button>
+    <span id="save-count" style="margin: 8px"></span>
+</div>
+<style>
+    .in-input {
+        color: rgba(0, 0, 0, 0.65);
+        background: #FFF;
+        line-height: 1.5;
+        height: 40px;
+        padding-left: 10px;
+        line-height: 40px;
+        width: 200px;
+    }
+
+
+    .in-btn {
+        cursor: pointer;
+        border: none;
+        margin: 10px;
+        color: white;
+        font-size: 14px;
+        height: 40px;
+        padding: 0 20px;
+        border-radius: 4px;
+        color: rgba(0, 0, 0, 0.65);
+        background: #FFF;
+        border: 1px solid #d9d9d9;
+    }
+
+    .in-input:hover {
+        border: 1px solid #1890ff;
+        color: #1890ff;
+        box-shadow: 0 0 4px;
+        transition: all .3s;
+    }
+
+    .in-btn:hover {
+        background: #1890ff;
+        color: #FFF;
+        transition: all .3s;
+    }
+
+    .in-btn-primary {
+        background: #1890ff;
+        color: #FFF;
+    }
+
+    .in-btn:focus {
+        outline: none;
+    }
+</style>
+<script>
+    const data = [];
+    document.querySelector("#save2file").addEventListener('click', () => {
+        const content = JSON.stringify(data);
+        const save = document.createElement("a");
+        save.setAttribute("download", "流.json");
+        save.setAttribute("href", `data:application/json,${content}`);
+        save.click();
+        message.success("保存完成在下载中查看")
+    })
+    publish.accept = x => {
+        data.push(x);
+        document.querySelector("#save-count").innerHTML = `数量: ${data.length}`;
+    }
+</script>

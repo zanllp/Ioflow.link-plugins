@@ -98,7 +98,6 @@
         if (Date.now() - lastPush < io.maxSpeed) {
             return;
         }
-        flushHint();
         fetch(`https://api.zanllp.cn/socket/push?descriptor=${desc}`, {
             body: JSON.stringify(x),
             method: 'POST',
