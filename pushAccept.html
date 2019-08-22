@@ -70,12 +70,12 @@
     io.ondata = x => push(x);
     const $ = x => document.querySelector(x);
     $("#open-socket").addEventListener('click', () => {
-        io.initSocket($("#socket-desc").value).then(() => $("#open-socket").innerText = "已连接").catch(err => alert(err.message))
+        io.initSocket($("#socket-desc").value).then(() => $("#open-socket").innerText = "已连接").catch(err => message.error(err.message))
     })
     $("#create-socket").addEventListener('click', () => {
         io.createSocketDesc().then(desc => {
             $("#socket-desc").value = desc;
-        }).catch(err => alert(err.message))
+        }).catch(err =>  message.error(err.message))
     })
 
 </script>

@@ -1,10 +1,11 @@
 <div class="socket">
-    <div>自动推送
-        <button id="open-push" class="in-btn in-btn-primary">开启</button>
-        <input id="push-desc" class="in-input in-cont" placeholder="输入描述符后开始" type="text">
-    </div>
-    <div id="socket-hint">
-
+    <div style="border: 1px solid #d9d9d9;background: white;border-radius: 4px;">
+        <div style="margin: 8px">自动推送
+            <button id="open-push" class="in-btn in-btn-primary">开启</button>
+        </div>
+        <div>
+            <input id="push-desc" class="in-input in-cont" placeholder="输入描述符后开始" type="text">
+        </div>
     </div>
 </div>
 
@@ -26,7 +27,7 @@
 
     .in-cont {
         border: 1px solid #d9d9d9;
-        margin: 10px;
+        margin: 8px;
         border-radius: 4px;
     }
 
@@ -65,28 +66,23 @@
     .in-btn:focus {
         outline: none;
     }
-
-    .socket-hint {
-        margin: 8px;
-    }
 </style>
 <script>
     const $ = x => document.querySelector(x);
-    const flushHint = () => $("#socket-hint").innerText = `当前最大速度${io.maxSpeed ? io.maxSpeed : 3000}ms每次，超过的流会被忽略`;
     const getDesc = () => $("#push-desc").value;
     let autoPush = false;
     let lastPush = 0;
     $("#open-push").addEventListener('click', () => {
         autoPush = !autoPush;
         if (autoPush) {
+            message.info(`最大速度${io.maxSpeed ? io.maxSpeed : 3000}ms每次，超过的流会被忽略`);
             const desc = getDesc();
             if (!desc || desc.length === 0) {
-                alert('描述符必填,可以通过流推送接收组件获取');
+                message.error('描述符必填,可以通过流推送接收组件获取',5);
                 autoPush = false;
             }
         }
         $("#open-push").innerText = autoPush ? "关闭" : "开启";
-        flushHint();
     })
     publish.accept = x => {
         if (!autoPush) {
@@ -99,7 +95,7 @@
         if (io.maxSpeed === undefined) {
             io.maxSpeed = 3000;
         }
-        if (Date.now - lastPush < io.maxSpeed) {
+        if (Date.now() - lastPush < io.maxSpeed) {
             return;
         }
         flushHint();
