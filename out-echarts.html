@@ -1,8 +1,8 @@
 <script src="https://cdn.bootcss.com/echarts/4.2.1-rc1/echarts-en.common.js"></script>
-<div id="container" style="width: 600px;height:400px;"></div>
+<div class="echart-container" style="width: 600px;height:400px;"></div>
 <script>
     // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.querySelector("#container"));
+    var myChart = echarts.init(dom.querySelector(".echart-container"));
     var base = +new Date(2019, 9, 3);
     var oneDay = 24 * 3600 * 1000;
     var date = [];
