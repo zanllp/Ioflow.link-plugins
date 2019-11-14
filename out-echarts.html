@@ -6,9 +6,7 @@
     var base = +new Date(2019, 9, 3);
     var oneDay = 24 * 3600 * 1000;
     var date = [];
-
     var data = [];
-
     var option = {
         tooltip: {
             trigger: 'axis',
@@ -71,7 +69,7 @@
     };
 
 
-    publish.accept = x => {
+    lc.onAccept = x => {
         var now = new Date(base += oneDay);
         date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
         data.push(Number(x.value));

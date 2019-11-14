@@ -84,7 +84,7 @@
         }
         $("#open-push").innerText = autoPush ? "关闭" : "开启";
     })
-    publish.accept = x => {
+    lc.onAccept = x => {
         if (!autoPush) {
             return;
         }
@@ -101,8 +101,7 @@
         fetch(`https://api.zanllp.cn/socket/push?descriptor=${desc}`, {
             body: JSON.stringify(x),
             method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            credentials: 'include',
+            headers: { 'content-type': 'application/json' }
         })
         lastPush = Date.now();
     }

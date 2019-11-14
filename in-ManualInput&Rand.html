@@ -150,7 +150,7 @@
         }
         printValue() {
             const value = this.getRes().toFixed(2);
-            publish.push({ value });// 发布，把值往下传
+            push({ value });// 发布，把值往下传
             textContainer.textContent += value + "\n";
             textContainer.scrollTop = textContainer.scrollHeight;
         }
@@ -173,4 +173,7 @@
     inExp.tab = new Tab();
     inExp.input = new Input();
     inExp.rand = new Rand();
+    lc.onDestruct = () => {
+        clearInterval(inExp.rand.interval);
+    }
 </script>

@@ -60,7 +60,7 @@
         save.click();
         message.success("保存完成在下载中查看")
     })
-    publish.accept = x => {
+    lc.onAccept = x => {
         data.push(x);
         document.querySelector("#save-count").innerHTML = `数量: ${data.length}`;
     }
