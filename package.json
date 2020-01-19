@@ -1,0 +1,21 @@
+{
+  "name": "ioflow.link-plugins",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "repository": "git@github.com:zanllp/Ioflow.link-plugins.git",
+  "author": "zanllp <zanllp@163.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node-fetch": "^2.5.4",
+    "node-fetch": "^2.6.0",
+    "ts-node": "^8.6.2",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.5"
+  },
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^13.1.8"
+  }
+}

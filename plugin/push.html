@@ -1,3 +1,12 @@
+<!--PROFILE_START
+{
+    "name": "插件名",
+    "desc": "插件描述",
+    "type": "插件类型<input|output>",
+    "hash": "e46b2cdd2468a7c3aaef616d825f70f7db94f9f25c3235e24f08830bd78f2abe",
+    "id": 3
+}
+PROFILE_END-->
 <div class="socket">
     <div style="border: 1px solid #d9d9d9;background: white;border-radius: 4px;">
         <div style="margin: 8px">自动推送
@@ -8,13 +17,7 @@
         </div>
     </div>
 </div>
-
 <style>
-    .socket {
-        background: #f0f2f5;
-        padding: 8px;
-    }
-
     .in-input {
         color: rgba(0, 0, 0, 0.65);
         background: #FFF;
@@ -29,6 +32,11 @@
         border: 1px solid #d9d9d9;
         margin: 8px;
         border-radius: 4px;
+    }
+
+    .socket {
+        background: #f0f2f5;
+        padding: 8px;
     }
 
     .in-btn {
@@ -78,7 +86,7 @@
             message.info(`最大速度${io.maxSpeed ? io.maxSpeed : 3000}ms每次，超过的流会被忽略`);
             const desc = getDesc();
             if (!desc || desc.length === 0) {
-                message.error('描述符必填,可以通过流推送接收组件获取',5);
+                message.error('描述符必填,可以通过流推送接收组件获取', 5);
                 autoPush = false;
             }
         }
