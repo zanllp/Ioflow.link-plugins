@@ -1,17 +1,9 @@
-import { BACKEND_BASE, CSRF_HEADER } from '.';
+import fetch from 'node-fetch';
+import { BACKEND_BASE, CSRF_HEADER, COOKIE, MULTIPART, JSON_HEADER } from '.';
 import { checkJson, inherit, runtimeCheck, sha256Hash } from './tools';
-
 export enum IOCType {
     input = 'input',
     output = 'output',
-}
-export interface IAdd {
-    file: FormData;
-    code: string;
-    name: string;
-    type: IOCType;
-    desc: string;
-    id: number;
 }
 
 export interface IProfile {
@@ -21,6 +13,7 @@ export interface IProfile {
     name: string;
     id: number;
 }
+export type IAdd = IProfile & { code?: string };
 
 export class Plugin {
 
@@ -78,24 +71,29 @@ PROFILE_END-->\n`;
         return info;
     }
 
-    public static async addByFormData(add: IAdd) {
-        runtimeCheck(add.name.length !== 0, '名字不允许为空');
-        runtimeCheck(add.file.has('files[]'), '文件未设置');
-        const resp = await fetch(`${BACKEND_BASE}/plugin/addByFile?name=${add.name}&type=${add.type}&desc=${add.desc}`, {
-            body: add.file,
+    public static async add(add: IAdd) {
+        const resp = await fetch(`${BACKEND_BASE}/plugin/add`, {
+            body: JSON.stringify(add),
             method: 'POST',
-            credentials: 'include',
-            headers: CSRF_HEADER,
+            headers: {
+                ...CSRF_HEADER,
+                ...COOKIE,
+                ...JSON_HEADER,
+            },
         });
         return checkJson(resp);
     }
 
-    public static async updateByFormData(add: IAdd) {
+    public static async update(add: IAdd) {
         runtimeCheck(add.name.length !== 0, '名字不允许为空');
-        runtimeCheck(add.file.has('files[]'), '文件未设置');
-        const resp = await fetch(`${BACKEND_BASE}/plugin/updateByFile?name=${add.name}&type=${add.type}&desc=${add.desc}&id=${add.id}`, {
-            body: add.file,
+        const resp = await fetch(`${BACKEND_BASE}/plugin/update`, {
+            body: JSON.stringify(add),
             method: 'POST',
+            headers: {
+                ...CSRF_HEADER,
+                ...COOKIE,
+                ...JSON_HEADER,
+            },
         });
         return checkJson(resp);
     }
@@ -117,9 +115,7 @@ PROFILE_END-->\n`;
     /** 组件描述 */
     public desc: string = '';
 
-    /**
-     * 创建者
-     */
+    /** 创建者 */
     public creatorId: number = -1;
 
     /**

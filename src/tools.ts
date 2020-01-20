@@ -111,7 +111,7 @@ export const isDev = process.env.NODE_ENV === 'development';
  * 将响应序列化成json，随便检测是否包含errmsg，如果有直接抛出
  * @param resp fetch 后的响应
  */
-export const checkJson = async <T = any>(resp: Response) => {
+export const checkJson = async <T = any>(resp: any) => {
     const respj = await resp.json();
     runtimeCheck(!respj.errmsg, respj.errmsg);
     return respj as T;

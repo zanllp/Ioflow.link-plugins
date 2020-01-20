@@ -11,7 +11,8 @@
         "max-line-length": [true, 200],
         "arrow-parens": false,
         "quotemark": [true, "single", "jsx-double"],
-        "no-console":false
+        "no-console":false,
+        "array-type":false
     },
     "rulesDirectory": []
 }
