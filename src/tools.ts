@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { Readable } from 'stream';
+import { promises as fs } from 'fs';
 export const runtimeCheck = (value: any, message?: string, errorType: new (_?: string) => Error = Error) => {
     if (!value) {
         throw new errorType(message);
@@ -61,25 +61,6 @@ export const inherit = <T>(constructor: new () => T, obj: any): T => {
     return target;
 };
 
-/**
- * 读取流直到结束
- * @param stream 被读取的流
- */
-export const readStreamToEnd = async (stream: Readable) => {
-    const buf = new Array<Buffer>();
-    stream.on('readable', () => {
-        let chunk: Buffer = stream.read();
-        while (chunk !== null) {
-            buf.push(chunk);
-            chunk = stream.read();
-        }
-    });
-    const successRead = () => new Promise<void>(x => {
-        stream.on('end', () => x());
-    });
-    await successRead(); // 等待数据接受完成
-    return Buffer.concat(buf);
-};
 
 export const sha256Hash = (buf: Buffer | string) => {
     const hash = createHash('sha256');
@@ -115,4 +96,14 @@ export const checkJson = async <T = any>(resp: any) => {
     const respj = await resp.json();
     runtimeCheck(!respj.errmsg, respj.errmsg);
     return respj as T;
+};
+
+export const log = (...x: any[]) => console.info(...x);
+
+export const tryAccessDir = async (path: string) => {
+    try {
+        await fs.access(path);
+    } catch (error) {
+        await fs.mkdir(path);
+    }
 };

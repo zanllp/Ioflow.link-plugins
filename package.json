@@ -13,7 +13,9 @@
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "sync": "yarn start -sync",
+    "reset-id": "yarn start -reset"
   },
   "devDependencies": {
     "@types/node": "^13.1.8"

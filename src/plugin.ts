@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { BACKEND_BASE, CSRF_HEADER, COOKIE, MULTIPART, JSON_HEADER } from '.';
+import { BACKEND_BASE, CSRF_HEADER, COOKIE, JSON_HEADER } from '.';
 import { checkJson, inherit, runtimeCheck, sha256Hash } from './tools';
 export enum IOCType {
     input = 'input',
@@ -16,6 +16,35 @@ export interface IProfile {
 export type IAdd = IProfile & { code?: string };
 
 export class Plugin {
+
+    public id: number = 0;
+
+    /** 组件名称 */
+    public name: string = '';
+
+    /** 组件类型 */
+    public type: IOCType = IOCType.input;
+
+    /** 仓库链接 */
+    public url: string = '';
+
+    /** 图标链接 */
+    public iconUrl: string = '';
+
+    /** 组件描述 */
+    public desc: string = '';
+
+    /** 创建者 */
+    public creatorId: number = -1;
+
+    /**
+     * 创建时间，自动生成
+     */
+    public createdDate = new Date();
+
+    public updatedDate = new Date();
+
+    public hash: string = '';
 
     public static inherit(plugin: Plugin) {
         return inherit(Plugin, plugin);
@@ -97,34 +126,5 @@ PROFILE_END-->\n`;
         });
         return checkJson(resp);
     }
-
-    public id: number = 0;
-
-    /** 组件名称 */
-    public name: string = '';
-
-    /** 组件类型 */
-    public type: IOCType = IOCType.input;
-
-    /** 仓库链接 */
-    public url: string = '';
-
-    /** 图标链接 */
-    public iconUrl: string = '';
-
-    /** 组件描述 */
-    public desc: string = '';
-
-    /** 创建者 */
-    public creatorId: number = -1;
-
-    /**
-     * 创建时间，自动生成
-     */
-    public createdDate = new Date();
-
-    public updatedDate = new Date();
-
-    public hash: string = '';
 
 }
