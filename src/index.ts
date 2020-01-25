@@ -16,7 +16,7 @@ const run = async () => {
     const local = await localInfo();
     const remote = await remoteInfo();
     const info: IRepoType = { local, remote };
-    const argv = process.argv;
+    const { argv } = process;
     if (argv.length > 2) {
         const type = argv[2].substr(1);
         switch (type) {
@@ -30,10 +30,8 @@ const run = async () => {
                 throw new Error(`输入参数 ${type} 错误`);
         }
     } else {
-        console.info('-sync 同步代码');
+        console.info('-sync     同步仓库');
         console.info('-reset-id 重置本地仓库的组件id');
     }
 };
 Promise.resolve().then(run).catch(x => console.error(x));
-// localInfo().catch(x => console.error(x));
-// remoteInfo().then(x => x.forEach(_ => console.info(_))).catch(x => console.error(x));

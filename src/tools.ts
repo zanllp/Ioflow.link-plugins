@@ -61,7 +61,6 @@ export const inherit = <T>(constructor: new () => T, obj: any): T => {
     return target;
 };
 
-
 export const sha256Hash = (buf: Buffer | string) => {
     const hash = createHash('sha256');
     hash.update(buf);
