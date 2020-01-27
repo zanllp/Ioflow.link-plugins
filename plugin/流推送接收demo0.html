@@ -3,7 +3,7 @@
     "name": "流推送接收demo0",
     "desc": "接收服务器转发的数据流并继续向下流动",
     "type": "input",
-    "hash": "cde62afe95146773d19a76a0190cb01515e50d5ac4e7268a338fea0d3ab4affa",
+    "hash": "0f419886100f136b6e3c46b1cdfc41c252c7643e148209e73d8e6f3732593f5e",
     "id": 3
 }
 PROFILE_END-->
@@ -76,7 +76,7 @@ PROFILE_END-->
     }
 </style>
 <script>
-    io.ondata = x => push(x);
+    io.ondata = x => lc.push(x);
     const $ = x => document.querySelector(x);
     $("#open-socket").addEventListener('click', () => {
         io.initSocket($("#socket-desc").value).then(() => $("#open-socket").innerText = "已连接").catch(err => message.error(err.message))

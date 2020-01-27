@@ -3,7 +3,7 @@
     "name": "流输入demo0",
     "desc": "手动输出字符串或定时输出随机数字流",
     "type": "input",
-    "hash": "943e5e62807636ea222b4bf876d035e0df012f94bf89eed09562908ce2e1bcb4",
+    "hash": "d6e3987349e16308893822ffebc3fa854e6eeb3bb63ebdb02b351c7c01be414f",
     "id": 6
 }
 PROFILE_END-->
@@ -146,7 +146,7 @@ PROFILE_END-->
             this.value = value;
         }
         printValue() {
-            publish.push({ value:this.value });
+            lc.push({ value:this.value });
             textContainer.textContent += this.value + "\n";
             textContainer.scrollTop = textContainer.scrollHeight;
         }
@@ -160,7 +160,7 @@ PROFILE_END-->
         }
         printValue() {
             const value = this.getRes().toFixed(2);
-            push({ value });// 发布，把值往下传
+            lc.push({ value });// 发布，把值往下传
             textContainer.textContent += value + "\n";
             textContainer.scrollTop = textContainer.scrollHeight;
         }
