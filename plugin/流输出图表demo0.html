@@ -3,7 +3,7 @@
     "name": "流输出图表demo0",
     "desc": "接收输入的数字流并绘图",
     "type": "output",
-    "hash": "f14f3b0d13586a6c7073d9b04ab48f0210cf858ec9ffb60fcccedd8624778bb8",
+    "hash": "73a650022fcf66d312c5b3dcf07e9411335b67cd7c90e70ca0af86a46987d685",
     "id": 2
 }
 PROFILE_END-->
@@ -14,7 +14,7 @@ PROFILE_END-->
 
 <script>
     // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(dom.querySelector(".echart-container"));
+    var myChart = echarts.init($(".echart-container"));
     var base = +new Date(2019, 9, 3);
     var oneDay = 24 * 3600 * 1000;
     var date = [];

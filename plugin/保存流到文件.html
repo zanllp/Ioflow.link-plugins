@@ -3,7 +3,7 @@
     "name": "保存流到文件",
     "desc": "将接收到的数据序列化成json保存到本地文件中",
     "type": "output",
-    "hash": "9f3be2b63f7ed5583dca1c65013e84f294dec2e77a3fcfec64d7d2032859eebc",
+    "hash": "5ae2eaa6a8d9e729bbc9a775678fae0163ee64691be058be54595aadb44a7a1c",
     "id": 4
 }
 PROFILE_END-->
@@ -61,7 +61,7 @@ PROFILE_END-->
 </style>
 <script>
     const data = [];
-    document.querySelector("#save2file").addEventListener('click', () => {
+    $("#save2file").on('click', () => {
         const content = JSON.stringify(data);
         const save = document.createElement("a");
         save.setAttribute("download", "流.json");
@@ -71,6 +71,6 @@ PROFILE_END-->
     })
     lc.onAccept = x => {
         data.push(x);
-        document.querySelector("#save-count").innerHTML = `数量: ${data.length}`;
+        $("#save-count").innerHTML = `数量: ${data.length}`;
     }
 </script>

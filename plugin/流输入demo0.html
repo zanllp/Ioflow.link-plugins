@@ -3,34 +3,31 @@
     "name": "流输入demo0",
     "desc": "手动输出字符串或定时输出随机数字流",
     "type": "input",
-    "hash": "d6e3987349e16308893822ffebc3fa854e6eeb3bb63ebdb02b351c7c01be414f",
+    "hash": "aad1173afdb57acd881dc81c0a8d357ed745a6f356833c369834bb4a8166473d",
     "id": 6
 }
 PROFILE_END-->
 <div class="in-tab">
     <div class="tab-btnBar">
-        <button id="tabBtn-0" class="in-btn in-btn-selected" onclick="inExp.tab.setTabSelected(0)">手动输入</button>
-        <button id="tabBtn-1" class="in-btn" onclick="inExp.tab.setTabSelected(1);">随机数生成</button>
+        <button id="tabBtn-0" class="in-btn in-btn-selected">手动输入</button>
+        <button id="tabBtn-1" class="in-btn">随机数生成</button>
     </div>
     <div class="in-cont" style="display: inline-block;background: white">
         <div id="in-panel0">
-            <input class="in-input in-cont" type="text" oninput="inExp.input.setValue(value)">
-            <button class="in-btn in-btn-primary" onclick="inExp.input.printValue()">打印</button>
+            <input class="in-input in-cont" type="text">
+            <button class="in-btn in-btn-primary">打印</button>
         </div>
         <div id="in-panel1" style="display: none">
-            <input class="in-input in-cont" type="number" placeholder="输入上限"
-                onchange="inExp.rand.highLimit=Number(value)" />
-            <input class="in-input in-cont" type="number" placeholder="输入下限"
-                onchange="inExp.rand.lowLimit=Number(value)" />
-            <button class="in-btn in-btn-primary" onclick="inExp.rand.printValue()">获取一个值</button>
+            <input id="upper" class="in-input in-cont" type="number" placeholder="输入上限" />
+            <input id="lower" class="in-input in-cont" type="number" placeholder="输入下限" />
+            <button id="get-one-value" class="in-btn in-btn-primary">获取一个值</button>
             <div style="display:block;border: none">
                 <div style="margin: 10px;"> 定时调用</div>
-                <input class="in-input in-cont" type="number" placeholder="输入时间间隔(ms)"
-                    onchange="inExp.rand.timeout=Number(value)" />
-                <button class="in-btn" id="timerChange" onclick="inExp.rand.timerChange()">开始</button>
+                <input id="time-interval" class="in-input in-cont" type="number" placeholder="输入时间间隔(ms)">
+                <button class="in-btn" id="timerChange">开始</button>
             </div>
         </div>
-        
+
         <textarea id="textContainer" class="in-cont" readonly></textarea>
     </div>
 </div>
@@ -130,23 +127,23 @@ PROFILE_END-->
 <script>
     class Tab {
         tabSelected = 0;
-        panelIds = ["in-panel0", "in-panel1"];
+        panelIds = [ "in-panel0", "in-panel1" ];
         setTabSelected(select) {
-            document.querySelector(`#tabBtn-${this.tabSelected}`).classList.remove(["in-btn-selected"]);
-            document.querySelector(`#tabBtn-${select}`).classList.add(["in-btn-selected"]);
+            $(`#tabBtn-${this.tabSelected}`).classList.remove([ "in-btn-selected" ]);
+            $(`#tabBtn-${select}`).classList.add([ "in-btn-selected" ]);
             this.tabSelected = select;
-            this.panelIds.forEach(x => document.querySelector(`#${x}`).setStyle({ display: "none" }))
-            document.querySelector(`#in-panel${select}`).setStyle({ display: "block" });
+            this.panelIds.forEach(x => $(`#${x}`).setStyle({ display: "none" }))
+            $(`#in-panel${select}`).setStyle({ display: "block" });
         }
     }
     class Input {
         value = "";
-        textContainer = document.querySelector("#textContainer");
+        textContainer = $("#textContainer");
         setValue(value) {
             this.value = value;
         }
         printValue() {
-            lc.push({ value:this.value });
+            lc.push({ value: this.value });
             textContainer.textContent += this.value + "\n";
             textContainer.scrollTop = textContainer.scrollHeight;
         }
@@ -154,7 +151,7 @@ PROFILE_END-->
     class Rand {
         highLimit = 10;
         lowLimit = 0;
-        textContainer = document.querySelector("#textContainer");
+        textContainer = $("#textContainer");
         getRes() {
             return this.lowLimit + (Math.random()) * (this.highLimit - this.lowLimit);
         }
@@ -167,23 +164,32 @@ PROFILE_END-->
         interval = -1;
         timeout = 1000;
         timerChange() {
-            const statusDom = document.querySelector("#timerChange");
+            const statusDom = $("#timerChange");
             if (statusDom.textContent === "开始") {
                 statusDom.textContent = "暂停";
                 this.interval = setInterval(() => this.printValue(), this.timeout);
-                statusDom.classList.add(["in-beatsAnimation"]);
+                statusDom.classList.add([ "in-beatsAnimation" ]);
             } else {
                 statusDom.textContent = "开始";
                 clearInterval(this.interval);
-                statusDom.classList.remove(["in-beatsAnimation"]);
+                statusDom.classList.remove([ "in-beatsAnimation" ]);
 
             }
         };
     }
-    inExp.tab = new Tab();
-    inExp.input = new Input();
-    inExp.rand = new Rand();
+    const tab = new Tab();
+    const input = new Input();
+    const rand = new Rand();
+    $("#tabBtn-0").on('click', () => tab.setTabSelected(0));
+    $("#tabBtn-1").on('click', () => tab.setTabSelected(1));
+    $("#in-panel0 input").on("input", x => input.setValue(x.target.value));
+    $("#in-panel0 button").on("click", () => input.printValue());
+    $("#timerChange").on('click', () => rand.timerChange());
+    $("#time-interval").on('change', x => rand.timeout = Number(x.target.value));
+    $("#upper").on('change', x => rand.highLimit = Number(x.target.value));
+    $("#lower").on('change', x => rand.lowLimit = Number(x.target.value));
+    $("#get-one-value").on('click', () => rand.printValue());
     lc.onDestruct = () => {
-        clearInterval(inExp.rand.interval);
+        clearInterval(rand.interval);
     }
 </script>

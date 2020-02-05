@@ -3,7 +3,7 @@
     "name": "流推送",
     "desc": "接收数据流并向目标socket推送",
     "type": "output",
-    "hash": "6f858a93fcb03a67246c0f14b02397974a83a5434ffd460694f42dc45bf2c3ba",
+    "hash": "d801f959aa1dc415c4d8fefe5b519dd5c9cb0117d991f9b865d14436a190c407",
     "id": 5
 }
 PROFILE_END-->
@@ -77,11 +77,10 @@ PROFILE_END-->
     }
 </style>
 <script>
-    const $ = x => document.querySelector(x);
     const getDesc = () => $("#push-desc").value;
     let autoPush = false;
     let lastPush = 0;
-    $("#open-push").addEventListener('click', () => {
+    $("#open-push").on('click', () => {
         autoPush = !autoPush;
         if (autoPush) {
             message.info(`最大速度${io.maxSpeed ? io.maxSpeed : 3000}ms每次，超过的流会被忽略`);
@@ -114,6 +113,5 @@ PROFILE_END-->
         })
         lastPush = Date.now();
     }
-
 
 </script>

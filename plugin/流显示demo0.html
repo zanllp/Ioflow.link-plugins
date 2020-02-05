@@ -3,11 +3,11 @@
     "name": "流显示demo0",
     "desc": "将流入的数据序列化再打印出来",
     "type": "output",
-    "hash": "55925c09d82f850f745a1e3dac9b49c861955a4da67c18be1c8f5072cf253a01",
+    "hash": "e143bca6830992a96709889e552b47cddcf3275ed2e132fbf6dec7a0902e873a",
     "id": 1
 }
 PROFILE_END-->
-<div id="flowContainer">
+<div class="flowContainer">
     <ol class="flow-warp">
     </ol>
     <div>
@@ -21,14 +21,14 @@ PROFILE_END-->
 </div>
 
 <style>
-    #flowContainer {
+    .flowContainer {
         width: 600px;
         height: 400px;
         background: #f0f2f5;
         padding: 8px;
     }
 
-    #flowContainer .flow-warp {
+    .flowContainer .flow-warp {
         height: 90%;
         border: 1px solid #d9d9d9;
         background: white;
@@ -38,7 +38,7 @@ PROFILE_END-->
         list-style: none;
     }
 
-    #flowContainer .flow-item {
+    .flowContainer .flow-item {
         width: calc(100%-16px);
         margin: 8px;
         padding: 8px 16px;
@@ -47,12 +47,12 @@ PROFILE_END-->
         white-space: pre;
     }
 
-    #flowContainer .flow-item:nth-child(odd) {
+    .flowContainer .flow-item:nth-child(odd) {
         background: gray;
         color: white;
     }
 
-    #flowContainer input[type="number"] {
+    .flowContainer input[type="number"] {
         border: 1px solid #d9d9d9;
         border-radius: 4px;
         padding-left: 8px;
@@ -60,12 +60,12 @@ PROFILE_END-->
 </style>
 <script>
     let autoScroll = true;
-    document.querySelector('#flowContainer input[type="checkbox"]').addEventListener('change', x => autoScroll = x.target.checked);
+    $('.flowContainer input[type="checkbox"]').on('change', x => autoScroll = x.target.checked);
     let space = 0;
-    document.querySelector('#flowContainer input[type="number"]').addEventListener('change', x => {
+    $('.flowContainer input[type="number"]').on('change', x => {
         space = Number(x.target.value);
     });
-    const containerEle = document.querySelector("#flowContainer .flow-warp");
+    const containerEle = $(".flowContainer .flow-warp");
     let count = 0;
     const addItem = text => {
         const item = document.createElement("li");
@@ -76,6 +76,6 @@ PROFILE_END-->
             containerEle.scrollTop = containerEle.scrollHeight;
         }
     }
-    lc.onAccept = x => addItem(JSON.stringify(x, null,space))
-    
+    lc.onAccept = x => addItem(JSON.stringify(x, null, space))
+
 </script>

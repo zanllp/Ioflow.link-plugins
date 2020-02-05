@@ -3,7 +3,7 @@
     "name": "流推送接收demo0",
     "desc": "接收服务器转发的数据流并继续向下流动",
     "type": "input",
-    "hash": "0f419886100f136b6e3c46b1cdfc41c252c7643e148209e73d8e6f3732593f5e",
+    "hash": "d1c1b0fb0037ae24b87965eef94dc269c2f62c3d2e158b9c42b023637da857b1",
     "id": 3
 }
 PROFILE_END-->
@@ -77,14 +77,13 @@ PROFILE_END-->
 </style>
 <script>
     io.ondata = x => lc.push(x);
-    const $ = x => document.querySelector(x);
-    $("#open-socket").addEventListener('click', () => {
+    $("#open-socket").on('click', () => {
         io.initSocket($("#socket-desc").value).then(() => $("#open-socket").innerText = "已连接").catch(err => message.error(err.message))
     })
-    $("#create-socket").addEventListener('click', () => {
+    $("#create-socket").on('click', () => {
         io.createSocketDesc().then(desc => {
             $("#socket-desc").value = desc;
-        }).catch(err =>  message.error(err.message))
+        }).catch(err => message.error(err.message))
     })
 
 </script>
