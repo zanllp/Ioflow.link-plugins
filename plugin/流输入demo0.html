@@ -3,7 +3,7 @@
     "name": "流输入demo0",
     "desc": "手动输出字符串或定时输出随机数字流",
     "type": "input",
-    "hash": "aad1173afdb57acd881dc81c0a8d357ed745a6f356833c369834bb4a8166473d",
+    "hash": "7df1c67c34b6c58252587f27bd9642893b9c2b7c406dcdef38d4de1f8786703f",
     "id": 6
 }
 PROFILE_END-->
@@ -129,9 +129,10 @@ PROFILE_END-->
         tabSelected = 0;
         panelIds = [ "in-panel0", "in-panel1" ];
         setTabSelected(select) {
-            $(`#tabBtn-${this.tabSelected}`).classList.remove([ "in-btn-selected" ]);
-            $(`#tabBtn-${select}`).classList.add([ "in-btn-selected" ]);
+            $(`#tabBtn-${this.tabSelected}`).classList.remove("in-btn-selected");
+            $(`#tabBtn-${select}`).classList.add("in-btn-selected");
             this.tabSelected = select;
+            // 显示目标tab页
             this.panelIds.forEach(x => $(`#${x}`).setStyle({ display: "none" }))
             $(`#in-panel${select}`).setStyle({ display: "block" });
         }
@@ -163,17 +164,19 @@ PROFILE_END-->
         }
         interval = -1;
         timeout = 1000;
+        start = false;
         timerChange() {
             const statusDom = $("#timerChange");
-            if (statusDom.textContent === "开始") {
+            if (this.start === false) {
                 statusDom.textContent = "暂停";
+                this.start = true;
                 this.interval = setInterval(() => this.printValue(), this.timeout);
-                statusDom.classList.add([ "in-beatsAnimation" ]);
+                statusDom.classList.add("in-beatsAnimation");
             } else {
+                this.start = false;
                 statusDom.textContent = "开始";
                 clearInterval(this.interval);
-                statusDom.classList.remove([ "in-beatsAnimation" ]);
-
+                statusDom.classList.remove("in-beatsAnimation");
             }
         };
     }
@@ -189,7 +192,25 @@ PROFILE_END-->
     $("#upper").on('change', x => rand.highLimit = Number(x.target.value));
     $("#lower").on('change', x => rand.lowLimit = Number(x.target.value));
     $("#get-one-value").on('click', () => rand.printValue());
+    // 析构时回收
     lc.onDestruct = () => {
-        clearInterval(rand.interval);
+        clearInterval(rand.interval)
+    };
+    // 保存快照时记录当前状态
+    lc.onRecord = (fn) => {
+        const state = {};
+        state.tab = tab.tabSelected;
+        state.start = rand.start;
+        state.lowLimit = rand.lowLimit;
+        state.highLimit = rand.highLimit;
+        fn(state);
+    }
+    // 还原快照时还原状态
+    lc.onLoad = (state) => {
+        tab.setTabSelected(state.tab)
+        rand.highLimit = state.highLimit;
+        rand.lowLimit = state.lowLimit;
+        rand.start = !state.start;
+        rand.timerChange();
     }
 </script>
