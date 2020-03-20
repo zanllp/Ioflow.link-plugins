@@ -4,13 +4,13 @@ import { reset } from './reset';
 
 export const DEV = false;
 export const BACKEND_BASE = DEV ? 'http://127.0.0.1:7001' : 'https://api.ioflow.link';
-export const CSRF = DEV ? 'rd6MjdiILDJ7hSW4feK8vQiC' : 'l38JTxitsxcltQtYnt08xjBa';
+export const CSRF = DEV ? 'rd6MjdiILDJ7hSW4feK8vQiC' : '4geAWWPd_k1v33qR2jChg';
 export const CSRF_HEADER = { 'x-csrf-token': CSRF };
 export const JSON_HEADER = { 'content-type': 'application/json' };
 export const PLUGIN_DIR = './plugin';
 export const COOKIE = DEV
     ? { Cookie: 'token=G6SvgfsqFCZvB7JJUtTlCdevSh4HDu4XQXO3gXB3TxBlBgYIgD5eGCWt8c3EtjHr; token.sig=TvCg_5L3mkhadCbPUbBTjLCzLHEbSLk0DznlPyQvXAQ; csrfToken=rd6MjdiILDJ7hSW4feK8vQiC' }
-    : { Cookie: 'csrfToken=l38JTxitsxcltQtYnt08xjBa; token=i0eSJMgc14SIGdlaE9DQPOZCgWhgcjICJ0CY3POf8HHPXDWwJqqp1m9FIxClH395; token.sig=2Sh30cTg-6aWM4JWOi6AYAtaqHW1NQpCaH8GE8zha3c' };
+    : { Cookie: 'csrfToken=4geAWWPd_keGSxUjZfH7ZHcsdQNfVZIobtbcU6V3d9ZDAjTg8WbU0o4y7ZIRPYG; token.sig=Mo-mdhgyRJ1wNapV2TYmtzNecI1piRwNDEExuLUAhH8; io=51Ky5k7bHMR2U2DAAAAL' };
 
 const run = async () => {
     const local = await localInfo();

@@ -3,7 +3,7 @@
     "name": "流显示demo0",
     "desc": "将流入的数据序列化再打印出来",
     "type": "output",
-    "hash": "ce701a1f90dfdf026f96b4215abe35b751b571e6036bb0df0db325a24daf40b3",
+    "hash": "c8745443306769e5b7076edb5875e6336084d9e90fb2ed74d576b06c008effd9",
     "id": 1
 }
 PROFILE_END-->
@@ -78,12 +78,11 @@ PROFILE_END-->
     }
     lc.onAccept = x => {
         let str = JSON.stringify(x, null, space);
-        if (str.length>64) {
+        if (str.length > 64) {
             space = 4;
             $('.flowContainer input[type="number"]').value = 4;
             str = JSON.stringify(x, null, space);
         }
         addItem(str);
     }
-
 </script>
