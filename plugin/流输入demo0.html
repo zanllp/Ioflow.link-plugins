@@ -3,7 +3,7 @@
     "name": "流输入demo0",
     "desc": "手动输出字符串或定时输出随机数字流",
     "type": "input",
-    "hash": "7df1c67c34b6c58252587f27bd9642893b9c2b7c406dcdef38d4de1f8786703f",
+    "hash": "d9b51e493890087ffa143a8df29f91ed19c689221c997a14a26332b908383f8d",
     "id": 6
 }
 PROFILE_END-->
@@ -129,6 +129,7 @@ PROFILE_END-->
         tabSelected = 0;
         panelIds = [ "in-panel0", "in-panel1" ];
         setTabSelected(select) {
+            lc.resize();
             $(`#tabBtn-${this.tabSelected}`).classList.remove("in-btn-selected");
             $(`#tabBtn-${select}`).classList.add("in-btn-selected");
             this.tabSelected = select;
