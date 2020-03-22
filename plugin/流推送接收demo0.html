@@ -3,7 +3,7 @@
     "name": "流推送接收demo0",
     "desc": "接收服务器转发的数据流并继续向下流动",
     "type": "input",
-    "hash": "d906596a22dadab51ed577dd0ac7ee3e89a29d0c7775ffb0bf22acbedfe40070",
+    "hash": "e80fdbd660108bd9a0dc415beabc93e19f6671814469a4158b5dc946cf5247e5",
     "id": 3
 }
 PROFILE_END-->
@@ -76,21 +76,29 @@ PROFILE_END-->
     }
 </style>
 <script>
+    const openSocket = $('#open-socket');
+    const socketDesc = $("#socket-desc");
+    const createSocket = $("#create-socket");
     io.ondata = x => lc.push(x);
-    $("#open-socket").on('click', () => {
-        const { value } = $("#socket-desc");
-        io.initSocket(value)
-            .then(() => {
-                $("#open-socket").innerText = "已连接"
-                $("#socket-desc").value = io.descriptor;
-            })
-            .catch(err => message.error(err.message))
+    openSocket.on('click', () => {
+        if (openSocket.textContent === '连接') {
+            io.initSocket(socketDesc.value)
+                .then(() => {
+                    openSocket.textContent = "已连接"
+                    socketDesc.value = io.descriptor;
+                })
+                .catch(err => message.error(err.message))
+        } else {
+            io.disconnect();
+            openSocket.textContent = "连接";
+        }
     })
-    $("#create-socket").on('click', () => {
+    createSocket.on('click', () => {
         io.createSocketDesc()
             .then(() => {
-                $("#socket-desc").value = io.descriptor;
+                socketDesc.value = io.descriptor;
                 io.initSocket();
+                openSocket.textContent = "已连接"
             })
             .catch(err => message.error(err.message))
     })
