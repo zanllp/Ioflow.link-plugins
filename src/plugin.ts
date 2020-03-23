@@ -1,7 +1,6 @@
 import fetch from 'node-fetch';
-import { BACKEND_BASE, CSRF_HEADER, JSON_HEADER } from '.';
+import { BACKEND_BASE, CSRF_HEADER, JSON_HEADER, COOKIE } from '.';
 import { checkJson, inherit, runtimeCheck, sha256Hash } from './tools';
-import { COOKIE } from './config';
 export enum IOCType {
     input = 'input',
     output = 'output',

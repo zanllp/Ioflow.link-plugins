@@ -1,9 +1,11 @@
 import { localInfo, IRepoType, remoteInfo } from './pluginInfo';
 import { sync } from './sync';
 import { reset } from './reset';
-import { CSRF } from './config';
+import config from './config';
 
 export const DEV = false;
+export const COOKIE = { Cookie: config.cookie };
+export const CSRF = config.csrf; // 从chrome开发工具中获取csrf，cookie一样
 export const BACKEND_BASE = DEV ? 'http://127.0.0.1:7001' : 'https://api.ioflow.link';
 export const CSRF_HEADER = { 'x-csrf-token': CSRF };
 export const JSON_HEADER = { 'content-type': 'application/json' };
