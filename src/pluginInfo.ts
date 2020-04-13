@@ -46,7 +46,7 @@ export const localInfo = async () => {
         }));
         throw new Error(msg);
     }
-    return localPluginInfo.filter(x => x);
+    return localPluginInfo.filter(x => x) as Array<IProfile & { path: string }>;
 };
 
 export const remoteInfo = (): Promise<Array<Plugin>> =>

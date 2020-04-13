@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { BACKEND_BASE, CSRF_HEADER, JSON_HEADER, COOKIE } from '.';
+import { BACKEND_BASE,   JSON_HEADER, loginCert} from '.';
 import { checkJson, inherit, runtimeCheck, sha256Hash } from './tools';
 export enum IOCType {
     input = 'input',
@@ -11,6 +11,7 @@ export interface IProfile {
     hash: string;
     desc: string;
     name: string;
+    target?: 'es5' | 'es6' | 'ts';
     id: number;
 }
 export type IAdd = IProfile & { code?: string };
@@ -56,8 +57,8 @@ export class Plugin {
 
     public static getProfile(src: string) {
         const reg = /^<!--PROFILE_START(.*)PROFILE_END-->/s.exec(src);
-        runtimeCheck(reg.length === 2, '不存在profile');
-        return JSON.parse(reg[1].trim());
+        runtimeCheck(reg!.length === 2, '不存在profile');
+        return JSON.parse(reg![1].trim());
     }
 
     /**
@@ -74,7 +75,7 @@ PROFILE_END-->\n`;
     public static getBody(src: string) {
         const reg = /PROFILE_END-->([\r\n]*)(.*)$/s.exec(src);
         runtimeCheck(reg && reg.length === 3, '不存在profile');
-        return reg[2];
+        return reg![2];
     }
 
     /**
@@ -105,8 +106,8 @@ PROFILE_END-->\n`;
             body: JSON.stringify(add),
             method: 'POST',
             headers: {
-                ...CSRF_HEADER,
-                ...COOKIE,
+                ...loginCert.csrf,
+                ...loginCert.cookie,
                 ...JSON_HEADER,
             },
         });
@@ -119,8 +120,8 @@ PROFILE_END-->\n`;
             body: JSON.stringify(add),
             method: 'POST',
             headers: {
-                ...CSRF_HEADER,
-                ...COOKIE,
+                ...loginCert.csrf,
+                ...loginCert.cookie,
                 ...JSON_HEADER,
             },
         });

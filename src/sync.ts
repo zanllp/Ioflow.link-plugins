@@ -6,6 +6,7 @@ import { log, runtimeCheck, tryAccessDir } from './tools';
 import { promises as fs } from 'fs';
 import fetch from 'node-fetch';
 const created = async (info: IRepoType) => {
+    console.info(1,info)
     const { local } = info;
     log('本地仓库新增:');
     const newCreate = local.filter(x => x.id === -1);
@@ -26,7 +27,7 @@ const created = async (info: IRepoType) => {
         runtimeCheck(targetRemote, '找不到远程中对应的新增组件信息');
         const buf = await fs.readFile(x.path);
         const newBuf = Plugin.modifyProfile(buf, {
-            id: targetRemote.id,
+            id: targetRemote!.id,
         }).buf;
         await fs.writeFile(x.path, newBuf);
     }));
