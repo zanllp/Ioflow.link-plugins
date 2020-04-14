@@ -6,7 +6,6 @@ import { log, runtimeCheck, tryAccessDir } from './tools';
 import { promises as fs } from 'fs';
 import fetch from 'node-fetch';
 const created = async (info: IRepoType) => {
-    console.info(1,info)
     const { local } = info;
     log('本地仓库新增:');
     const newCreate = local.filter(x => x.id === -1);

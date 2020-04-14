@@ -27,11 +27,13 @@ const watch = async (p = 2363) => {
     console.info(`监听端口${p},等待连接`);
     io.on('connect', s => {
         const { account, csrf, cookie } = s.handshake.query;
+        s.on('disconnect', () => {
+            console.log(`账号${account}已断开连接`);
+        })
         loginCert.cookieSrc = cookie;
         loginCert.csrfSrc = csrf;
         console.log(`账号${account}已连接`);
     });
-
 };
 
 const run = async () => {
