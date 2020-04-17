@@ -1,12 +1,13 @@
-import Socket from 'socket.io';
 import { IRepoType, localInfo, remoteInfo } from './pluginInfo';
 import { reset } from './reset';
 import { sync } from './sync';
+import { watch } from './watch';
+
 
 export const DEV = false;
 export const BACKEND_BASE = DEV ? 'http://127.0.0.1:7001' : 'https://api.ioflow.link';
 export const JSON_HEADER = { 'content-type': 'application/json' };
-export const PLUGIN_DIR = './plugin';
+export const COMPONENT_DIR = './COMPONENT';
 export const loginCert = {
     get csrf() {
         return {
@@ -22,33 +23,24 @@ export const loginCert = {
     cookieSrc: '',
 };
 
-const watch = async (p = 2363) => {
-    const io = Socket(p);
-    console.info(`监听端口${p},等待连接`);
-    io.on('connect', s => {
-        const { account, csrf, cookie } = s.handshake.query;
-        s.on('disconnect', () => {
-            console.log(`账号${account}已断开连接`);
-        })
-        loginCert.cookieSrc = cookie;
-        loginCert.csrfSrc = csrf;
-        console.log(`账号${account}已连接`);
-    });
-};
-
-const run = async () => {
+const getInfo = async () => {
     const local = await localInfo();
     const remote = await remoteInfo();
     const info: IRepoType = { local, remote };
+    return info;
+}
+
+const run = async () => {
     const { argv } = process;
+    
     if (argv.length > 2) {
         const type = argv[2].substr(1);
         switch (type) {
             case 'reset':
-                await reset(info);
+                await reset(await getInfo());
                 return; // 只执行一次任务
             case 'sync':
-                await sync(info);
+                await sync(await getInfo());
                 return;
             case 'watch':
                 await watch();

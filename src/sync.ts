@@ -1,4 +1,4 @@
-import { PLUGIN_DIR } from '.';
+import { COMPONENT_DIR } from '.';
 import { Plugin, IProfile } from './plugin';
 import { IRepoType, remoteInfo } from './pluginInfo';
 import * as Path from 'path';
@@ -71,7 +71,7 @@ const lack = async (info: IRepoType) => {
     await Promise.all(lackPlugin.map(async x => {
         log(` --${x.name}`);
         const plugin = await fetch(x.url).then(y => y.text());
-        await fs.writeFile(PLUGIN_DIR + `/${x.name}.html`, Buffer.from(plugin));
+        await fs.writeFile(COMPONENT_DIR + `/${x.name}.html`, Buffer.from(plugin));
     }));
 };
 
@@ -82,7 +82,7 @@ const deleted = async (info: IRepoType) => {
     await tryAccessDir('./plugin/deleted');
     await Promise.all(deletedPlugin.map(async x => {
         log(`   --${x.path}`);
-        const newPath = Path.resolve(PLUGIN_DIR, './deleted', Path.parse(x.path).name + '.html');
+        const newPath = Path.resolve(COMPONENT_DIR, './deleted', Path.parse(x.path).name + '.html');
         await fs.rename(x.path, newPath);
     }));
 };
