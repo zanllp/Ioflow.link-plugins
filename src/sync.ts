@@ -19,7 +19,7 @@ const created = async (info: IRepoType) => {
             ...Plugin.getProfile(bufStr),
         });
     }));
-    const remote = await remoteInfo();
+    const { remote } = info;
     // 修改本地新增组件profile的id
     await Promise.all(newCreate.map(async x => {
         const targetRemote = remote.find(y => y.hash + y.name === x.hash + x.name);
@@ -79,7 +79,7 @@ const deleted = async (info: IRepoType) => {
     const { local, remote } = info;
     log('远程仓库已删除:');
     const deletedPlugin = local.filter(x => x.id !== -1).filter(x => !remote.find(y => y.id === x.id));
-    await tryAccessDir('./plugin/deleted');
+    await tryAccessDir(`./${COMPONENT_DIR}/deleted`);
     await Promise.all(deletedPlugin.map(async x => {
         log(`   --${x.path}`);
         const newPath = Path.resolve(COMPONENT_DIR, './deleted', Path.parse(x.path).name + '.html');

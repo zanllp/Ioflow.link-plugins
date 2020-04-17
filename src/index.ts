@@ -7,7 +7,7 @@ import { watch } from './watch';
 export const DEV = false;
 export const BACKEND_BASE = DEV ? 'http://127.0.0.1:7001' : 'https://api.ioflow.link';
 export const JSON_HEADER = { 'content-type': 'application/json' };
-export const COMPONENT_DIR = './COMPONENT';
+export const COMPONENT_DIR = './component';
 export const loginCert = {
     get csrf() {
         return {
@@ -32,18 +32,18 @@ const getInfo = async () => {
 
 const run = async () => {
     const { argv } = process;
-    
+    const info = await getInfo();
     if (argv.length > 2) {
         const type = argv[2].substr(1);
         switch (type) {
             case 'reset':
-                await reset(await getInfo());
+                await reset(info);
                 return; // 只执行一次任务
             case 'sync':
-                await sync(await getInfo());
+                await sync(info);
                 return;
             case 'watch':
-                await watch();
+                await watch(info);
                 return;
             default:
                 throw new Error(`输入参数 ${type} 错误`);
