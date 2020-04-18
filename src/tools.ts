@@ -106,4 +106,22 @@ export const tryAccessDir = async (path: string) => {
         await fs.mkdir(path);
     }
 };
-
+/*
+async function getPartInfo(x: IGraph, plu: PluginRepo) {
+    let code: string;
+    let name: string;
+    if (x.script) { // 使用修改过组件
+        code = x.script;
+        name = (plu ? plu.name : '临时组件') + ' - custom';
+    }
+    else if (x.repositoryId === undefined) { // 使用修改过组件
+        code = '';
+        name = '临时组件';
+    }
+    else { // 使用修改过组件
+        code = await (await fetch(plu.url as string)).text();
+        name = plu.name;
+    }
+    return { code, name:'' };
+}
+*/

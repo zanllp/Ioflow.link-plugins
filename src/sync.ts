@@ -1,10 +1,10 @@
-import { COMPONENT_DIR } from '.';
-import { Plugin, IProfile } from './plugin';
-import { IRepoType, remoteInfo } from './pluginInfo';
-import * as Path from 'path';
-import { log, runtimeCheck, tryAccessDir } from './tools';
 import { promises as fs } from 'fs';
 import fetch from 'node-fetch';
+import * as Path from 'path';
+import { COMPONENT_DIR, getRepoInfo } from '.';
+import { IProfile, Plugin } from './plugin';
+import { IRepoType } from './pluginInfo';
+import { log, runtimeCheck, tryAccessDir } from './tools';
 const created = async (info: IRepoType) => {
     const { local } = info;
     log('本地仓库新增:');
@@ -87,7 +87,8 @@ const deleted = async (info: IRepoType) => {
     }));
 };
 
-export const sync = async (info: IRepoType) => {
+export const sync = async () => {
+    const info = await getRepoInfo();
     await created(info);
     await diff(info);
     await lack(info);

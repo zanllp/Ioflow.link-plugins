@@ -3,7 +3,6 @@ import { reset } from './reset';
 import { sync } from './sync';
 import { watch } from './watch';
 
-
 export const DEV = false;
 export const BACKEND_BASE = DEV ? 'http://127.0.0.1:7001' : 'https://api.ioflow.link';
 export const JSON_HEADER = { 'content-type': 'application/json' };
@@ -23,27 +22,32 @@ export const loginCert = {
     cookieSrc: '',
 };
 
-const getInfo = async () => {
-    const local = await localInfo();
-    const remote = await remoteInfo();
-    const info: IRepoType = { local, remote };
-    return info;
-}
+let info: IRepoType | undefined;
+
+export const getRepoInfo = async () => {
+    if (info) {
+        return info;
+    } else {
+        const local = await localInfo();
+        const remote = await remoteInfo();
+        info = { local, remote };
+        return info;
+    }
+};
 
 const run = async () => {
     const { argv } = process;
-    const info = await getInfo();
     if (argv.length > 2) {
         const type = argv[2].substr(1);
         switch (type) {
             case 'reset':
-                await reset(info);
+                await reset();
                 return; // 只执行一次任务
             case 'sync':
-                await sync(info);
+                await sync();
                 return;
             case 'watch':
-                await watch(info);
+                await watch();
                 return;
             default:
                 throw new Error(`输入参数 ${type} 错误`);
