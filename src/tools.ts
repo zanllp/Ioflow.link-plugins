@@ -125,3 +125,18 @@ async function getPartInfo(x: IGraph, plu: PluginRepo) {
     return { code, name:'' };
 }
 */
+
+/*
+* 防抖
+* @param func 被包装函数
+* @param delay 延时，默认 300ms
+*/
+export const debounce = (func: (...args: any[]) => any, delay: number = 100) => {
+   let interval = -1;
+   return (...args: any[]) => {
+       if (interval !== -1) {
+           clearInterval(interval);
+       }
+       interval = setTimeout(() => func(...args), delay) as any;
+   };
+};

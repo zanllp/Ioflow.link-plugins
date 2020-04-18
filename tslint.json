@@ -14,7 +14,8 @@
         "no-console":false,
         "array-type":false,
         "curly":true,
-        "no-shadowed-variable":false
+        "no-shadowed-variable":false,
+        "max-classes-per-file":false
     },
     "rulesDirectory": []
 }

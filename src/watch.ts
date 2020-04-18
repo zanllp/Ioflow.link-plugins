@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import Socket from 'socket.io';
 import { getRepoInfo, JSON_HEADER, loginCert } from '.';
 import { sync } from './sync';
-import { tryAccessDir } from './tools';
+import { tryAccessDir, debounce } from './tools';
 const fsp = fs.promises;
 interface IComponent {
     eleId: string;
@@ -26,6 +26,18 @@ const getPrueTs = async (tsfileName: string) => {
     return { ts, src };
 };
 const baseName = 'operation-component';
+const fsWatcherQuene = new Array<fs.FSWatcher>();
+/**
+ * 清空监听的队列 ，不然在断开连接只会取消最后一次监听的文件且会删除所有文件
+ *  导致监听到一个不存在的文件抛出异常
+ */
+const clearFsWatcherQuene = () => {
+    let watcher = fsWatcherQuene.shift();
+    while (watcher) {
+        watcher.close();
+        watcher = fsWatcherQuene.shift();
+    }
+};
 
 const addDeclear = (src?: string) => importDeclear + spector + '\r' + src;
 export const watch = async (p = 2363) => {
@@ -34,16 +46,10 @@ export const watch = async (p = 2363) => {
     console.info(`监听端口${p},等待连接`);
     io.on('connect', s => {
         const { account, csrf, cookie } = s.handshake.query;
-        let tsfileName = undefined as undefined | string;
-        let htmlFileName = undefined as undefined | string;
         s.on('disconnect', async () => {
             console.log(`账号${account}已断开连接`);
-            if (htmlFileName) {
-                fs.unwatchFile(htmlFileName);
-                htmlFileName = undefined;
-            }
-            if (tsfileName) { // 操作的文件名不是未定义说明起码操作过一个文件
-                fs.unwatchFile(tsfileName);
+            clearFsWatcherQuene();
+            if (fsWatcherQuene.length) { // 操作的文件名不是未定义说明起码操作过一个文件
                 const dir = await fsp.readdir(baseName, { withFileTypes: true });
                 await Promise.all(dir.map(x => fsp.unlink(`${baseName}/${x.name}`))); // 断开连接后删除这个文件夹
                 await fsp.rmdir(baseName);
@@ -51,23 +57,13 @@ export const watch = async (p = 2363) => {
         });
         s.on(baseName, async (comp: IComponent) => {
             await tryAccessDir(baseName);
-            if (tsfileName) {
-                // 取消监听上一个操作的文件，不然在断开连接只会取消最后一次监听的文件且会删除所有文件
-                // 导致监听到一个不存在的文件抛出异常
-                fs.unwatchFile(tsfileName);
-            }
-            if (htmlFileName) {
-                fs.unwatchFile(htmlFileName);
-                htmlFileName = undefined;
-            }
-            tsfileName = `${baseName}/${comp.name}.ts`;
+            const tsfileName = `${baseName}/${comp.name}.ts`;
             console.log(`组件:${comp.name}已选择作为操作组件，使用编辑器打开[${tsfileName}]进行编辑`);
             await checkDeclear(s);
             if (comp.type === 'middleware') { // 中间件没有远程直接写js,ts就行
                 await operatrionMiddleware(comp, s, tsfileName);
             } else {
-                htmlFileName = `${baseName}/${comp.name}.html`;
-                await operationIOComponent(comp, s, tsfileName, htmlFileName);
+                await operationIOComponent(comp, s, tsfileName);
             }
         });
         loginCert.cookieSrc = cookie;
@@ -108,21 +104,23 @@ async function checkDeclear(s: Socket.Socket) {
 async function operatrionMiddleware(comp: IComponent, s: Socket.Socket, tsfileName: string) {
     const text = addDeclear(comp.ts || comp.script); // ts||script 有ts就写入ts，没有js
     await fsp.writeFile(tsfileName, text);
-    fs.watchFile(tsfileName, {}, async () => {
-        console.info('文件改变开始重新生成');
-        const { ts, src } = await getPrueTs(tsfileName!);
+    const watcher = fs.watch(tsfileName, {}, debounce(async () => { // 使用节流避免在短时间内的多次修改文件
+        console.info('文件改变开始重新生成');                         // 例如vscode在保存文件时会先写空文件再保存需要保存的文件，触发2次
+        const { ts, src } = await getPrueTs(tsfileName!);           // 使用watchfile仅触发一次是因为太慢
         if (ts === undefined) {
             throw new Error(`分割错误:${src}`);
         }
         const js = await ts2js(ts); // ts转es5的js
         s.emit('code-change', ts, js);
-    });
+    }));
+    fsWatcherQuene.push(watcher);
 }
 
 /**
  * 对流输入输出组件进行操作，生成ts&html，监听改变并编译回传
  */
-async function operationIOComponent(comp: IComponent, s: Socket.Socket, tsfileName: string, htmlFileName: string) {
+async function operationIOComponent(comp: IComponent, s: Socket.Socket, tsfileName: string) {
+    const htmlFileName = `${baseName}/${comp.name}.html`;
     let html: string;
     if (comp.script) { // 使用修改过组件
         html = comp.script;
@@ -150,7 +148,7 @@ async function operationIOComponent(comp: IComponent, s: Socket.Socket, tsfileNa
         fs.writeFileSync(htmlFileName, doc.body.innerHTML); // 重写
     }
     fs.writeFileSync(tsfileName, addDeclear(tsDom.innerHTML));
-    fs.watchFile(tsfileName, async () => {
+    const tsWatcher = fs.watch(tsfileName, debounce(async () => {
         console.info('ts文件改变开始重新编译，并插入到对应的html文件');
         const { ts, src } = await getPrueTs(tsfileName!);
         if (ts === undefined) {
@@ -160,10 +158,11 @@ async function operationIOComponent(comp: IComponent, s: Socket.Socket, tsfileNa
         doc.querySelector('#edit-ts')!.innerHTML = ts;
         doc.querySelector('#run-js')!.innerHTML = js;
         fs.writeFileSync(htmlFileName, doc.body.innerHTML); // 重写
-    });
-    fs.watchFile(htmlFileName, () => {
+    }));
+    const htmlWatcher = fs.watch(htmlFileName, debounce(() => {
         const html = fs.readFileSync(htmlFileName).toString();
         s.emit('code-change', html);
-        console.info('html文件上传');
-    });
+        console.info('ts编译完成,上传html文件');
+    }));
+    fsWatcherQuene.push(htmlWatcher, tsWatcher);
 }
