@@ -6,8 +6,14 @@
   "author": "zanllp <zanllp@163.com>",
   "license": "MIT",
   "dependencies": {
+    "@types/jsdom": "^16.2.1",
     "@types/node-fetch": "^2.5.4",
+    "@types/react": "^16.9.34",
+    "@types/socket.io": "^2.1.4",
+    "@types/socket.io-client": "^1.4.32",
+    "jsdom": "^16.2.2",
     "node-fetch": "^2.6.0",
+    "socket.io": "^2.3.0",
     "ts-node": "^8.6.2",
     "tslint": "^5.20.1",
     "typescript": "^3.7.5"
@@ -15,7 +21,9 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "sync": "yarn start -sync",
-    "reset-id": "yarn start -reset"
+    "reset-id": "yarn start -reset",
+    "watch": "yarn start -watch",
+    "fix": "npx tslint --fix -c ./tslint.json 'src/*.ts'"
   },
   "devDependencies": {
     "@types/node": "^13.1.8"

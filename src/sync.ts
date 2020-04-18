@@ -1,10 +1,10 @@
-import { PLUGIN_DIR } from '.';
-import { Plugin, IProfile } from './plugin';
-import { IRepoType, remoteInfo } from './pluginInfo';
-import * as Path from 'path';
-import { log, runtimeCheck, tryAccessDir } from './tools';
 import { promises as fs } from 'fs';
 import fetch from 'node-fetch';
+import * as Path from 'path';
+import { COMPONENT_DIR, getRepoInfo } from '.';
+import { IProfile, Plugin } from './plugin';
+import { IRepoType } from './pluginInfo';
+import { log, runtimeCheck, tryAccessDir } from './tools';
 const created = async (info: IRepoType) => {
     const { local } = info;
     log('本地仓库新增:');
@@ -19,14 +19,14 @@ const created = async (info: IRepoType) => {
             ...Plugin.getProfile(bufStr),
         });
     }));
-    const remote = await remoteInfo();
+    const { remote } = info;
     // 修改本地新增组件profile的id
     await Promise.all(newCreate.map(async x => {
         const targetRemote = remote.find(y => y.hash + y.name === x.hash + x.name);
         runtimeCheck(targetRemote, '找不到远程中对应的新增组件信息');
         const buf = await fs.readFile(x.path);
         const newBuf = Plugin.modifyProfile(buf, {
-            id: targetRemote.id,
+            id: targetRemote!.id,
         }).buf;
         await fs.writeFile(x.path, newBuf);
     }));
@@ -71,7 +71,7 @@ const lack = async (info: IRepoType) => {
     await Promise.all(lackPlugin.map(async x => {
         log(` --${x.name}`);
         const plugin = await fetch(x.url).then(y => y.text());
-        await fs.writeFile(PLUGIN_DIR + `/${x.name}.html`, Buffer.from(plugin));
+        await fs.writeFile(COMPONENT_DIR + `/${x.name}.html`, Buffer.from(plugin));
     }));
 };
 
@@ -79,15 +79,16 @@ const deleted = async (info: IRepoType) => {
     const { local, remote } = info;
     log('远程仓库已删除:');
     const deletedPlugin = local.filter(x => x.id !== -1).filter(x => !remote.find(y => y.id === x.id));
-    await tryAccessDir('./plugin/deleted');
+    await tryAccessDir(`./${COMPONENT_DIR}/deleted`);
     await Promise.all(deletedPlugin.map(async x => {
         log(`   --${x.path}`);
-        const newPath = Path.resolve(PLUGIN_DIR, './deleted', Path.parse(x.path).name + '.html');
+        const newPath = Path.resolve(COMPONENT_DIR, './deleted', Path.parse(x.path).name + '.html');
         await fs.rename(x.path, newPath);
     }));
 };
 
-export const sync = async (info: IRepoType) => {
+export const sync = async () => {
+    const info = await getRepoInfo();
     await created(info);
     await diff(info);
     await lack(info);

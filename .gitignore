@@ -24,3 +24,4 @@ yarn-error.log*
 
 # 放csrf和cookie的
 /src/config.ts
+/operation-component

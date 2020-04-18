@@ -14,29 +14,8 @@
         "no-console":false,
         "array-type":false,
         "curly":true,
-        "member-ordering": [// 设置修饰符顺序
-            true,
-            {
-                "order": [
-                    "public-constructor",
-                    "protected-constructor",
-                    "private-constructor",
-                    "public-instance-field",
-                    "protected-instance-field",
-                    "private-instance-field", 
-                    "public-static-field",
-                    "protected-static-field",
-                    "private-static-field",
-                    "public-instance-method",
-                    "protected-instance-method",
-                    "private-instance-method",
-                    "public-static-method",
-                    "protected-static-method",
-                    "private-static-method"
-                ]
-            }
-        ]
+        "no-shadowed-variable":false,
+        "max-classes-per-file":false
     },
     "rulesDirectory": []
-    
 }

@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { BACKEND_BASE, CSRF_HEADER, JSON_HEADER, COOKIE } from '.';
+import { BACKEND_BASE,   JSON_HEADER, loginCert} from '.';
 import { checkJson, inherit, runtimeCheck, sha256Hash } from './tools';
 export enum IOCType {
     input = 'input',
@@ -11,40 +11,12 @@ export interface IProfile {
     hash: string;
     desc: string;
     name: string;
+    target?: 'es5' | 'es6' | 'ts';
     id: number;
 }
 export type IAdd = IProfile & { code?: string };
 
 export class Plugin {
-
-    public id: number = 0;
-
-    /** 组件名称 */
-    public name: string = '';
-
-    /** 组件类型 */
-    public type: IOCType = IOCType.input;
-
-    /** 仓库链接 */
-    public url: string = '';
-
-    /** 图标链接 */
-    public iconUrl: string = '';
-
-    /** 组件描述 */
-    public desc: string = '';
-
-    /** 创建者 */
-    public creatorId: number = -1;
-
-    /**
-     * 创建时间，自动生成
-     */
-    public createdDate = new Date();
-
-    public updatedDate = new Date();
-
-    public hash: string = '';
 
     public static inherit(plugin: Plugin) {
         return inherit(Plugin, plugin);
@@ -56,8 +28,8 @@ export class Plugin {
 
     public static getProfile(src: string) {
         const reg = /^<!--PROFILE_START(.*)PROFILE_END-->/s.exec(src);
-        runtimeCheck(reg.length === 2, '不存在profile');
-        return JSON.parse(reg[1].trim());
+        runtimeCheck(reg!.length === 2, '不存在profile');
+        return JSON.parse(reg![1].trim());
     }
 
     /**
@@ -74,7 +46,7 @@ PROFILE_END-->\n`;
     public static getBody(src: string) {
         const reg = /PROFILE_END-->([\r\n]*)(.*)$/s.exec(src);
         runtimeCheck(reg && reg.length === 3, '不存在profile');
-        return reg[2];
+        return reg![2];
     }
 
     /**
@@ -105,8 +77,8 @@ PROFILE_END-->\n`;
             body: JSON.stringify(add),
             method: 'POST',
             headers: {
-                ...CSRF_HEADER,
-                ...COOKIE,
+                ...loginCert.csrf,
+                ...loginCert.cookie,
                 ...JSON_HEADER,
             },
         });
@@ -119,12 +91,41 @@ PROFILE_END-->\n`;
             body: JSON.stringify(add),
             method: 'POST',
             headers: {
-                ...CSRF_HEADER,
-                ...COOKIE,
+                ...loginCert.csrf,
+                ...loginCert.cookie,
                 ...JSON_HEADER,
             },
         });
         return checkJson(resp);
     }
+
+    public id: number = 0;
+
+    /** 组件名称 */
+    public name: string = '';
+
+    /** 组件类型 */
+    public type: IOCType = IOCType.input;
+
+    /** 仓库链接 */
+    public url: string = '';
+
+    /** 图标链接 */
+    public iconUrl: string = '';
+
+    /** 组件描述 */
+    public desc: string = '';
+
+    /** 创建者 */
+    public creatorId: number = -1;
+
+    /**
+     * 创建时间，自动生成
+     */
+    public createdDate = new Date();
+
+    public updatedDate = new Date();
+
+    public hash: string = '';
 
 }

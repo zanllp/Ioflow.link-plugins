@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import fetch from 'node-fetch';
 import * as Path from 'path';
-import { BACKEND_BASE, PLUGIN_DIR } from '.';
+import { BACKEND_BASE, COMPONENT_DIR} from '.';
 import { IProfile, Plugin } from './plugin';
 import { sha256Hash, tryAccessDir } from './tools';
 export interface IRepoType {
@@ -10,14 +10,14 @@ export interface IRepoType {
 }
 
 export const localInfo = async () => {
-    await tryAccessDir(PLUGIN_DIR);
-    const localPlugins = await fs.readdir(PLUGIN_DIR, { withFileTypes: true });
+    await tryAccessDir(COMPONENT_DIR);
+    const localPlugins = await fs.readdir(COMPONENT_DIR, { withFileTypes: true });
     const noExistProfile = new Array<string>();
     const localPluginInfo = await Promise.all(localPlugins.map(async x => {
         if (!x.isFile()) {
             return;
         }
-        const path = Path.resolve(PLUGIN_DIR, x.name);
+        const path = Path.resolve(COMPONENT_DIR, x.name);
         const buf = await fs.readFile(path);
         const bufStr = buf.toString();
         const include = Plugin.includeProfile(bufStr);
@@ -33,7 +33,7 @@ export const localInfo = async () => {
         let msg = '下列文件不存在profile，已插入空模板，在写好后尝试重新运行。\n';
         await Promise.all(noExistProfile.map(async x => {
             msg += `    --${x}\n`;
-            const path = Path.resolve(PLUGIN_DIR, x);
+            const path = Path.resolve(COMPONENT_DIR, x);
             const buf = await fs.readFile(path);
             const bufNew = Plugin.insertProfile(buf, {
                 name: '插件名<string>',
@@ -46,7 +46,7 @@ export const localInfo = async () => {
         }));
         throw new Error(msg);
     }
-    return localPluginInfo.filter(x => x);
+    return localPluginInfo.filter(x => x) as Array<IProfile & { path: string }>;
 };
 
 export const remoteInfo = (): Promise<Array<Plugin>> =>
