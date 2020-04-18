@@ -49,11 +49,9 @@ export const watch = async (p = 2363) => {
         s.on('disconnect', async () => {
             console.log(`账号${account}已断开连接`);
             clearFsWatcherQuene();
-            if (fsWatcherQuene.length) { // 操作的文件名不是未定义说明起码操作过一个文件
-                const dir = await fsp.readdir(baseName, { withFileTypes: true });
-                await Promise.all(dir.map(x => fsp.unlink(`${baseName}/${x.name}`))); // 断开连接后删除这个文件夹
-                await fsp.rmdir(baseName);
-            }
+            const dir = await fsp.readdir(baseName, { withFileTypes: true });
+            await Promise.all(dir.map(x => fsp.unlink(`${baseName}/${x.name}`))); // 断开连接后删除这个文件夹
+            await fsp.rmdir(baseName);
         });
         s.on(baseName, async (comp: IComponent) => {
             await tryAccessDir(baseName);
@@ -83,7 +81,7 @@ const ts2js = async (ts: string) => {
     const text = await res.text();
     const { js } = JSON.parse(text);
     const jsNormal = decodeURIComponent(js);
-    // console.info(text, js, jsNormal)
+    console.info(text.length, js.length, jsNormal.length)
     return jsNormal;
 };
 
