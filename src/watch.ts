@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import Socket from 'socket.io';
 import { getRepoInfo, JSON_HEADER, loginCert } from '.';
 import { sync } from './sync';
-import { tryAccessDir, debounce } from './tools';
+import { debounce, tryAccessDir } from './tools';
 const fsp = fs.promises;
 interface IComponent {
     eleId: string;
@@ -70,8 +70,15 @@ export const watch = async (p = 2363) => {
     });
 };
 
-const ts2js = async (ts: string) => {
-    const res = await fetch('http://127.0.0.1:7001/tsc', {
+const ts2js = async (ts: string, count = 0): Promise<string> => {
+    if (count !== 0) {
+        console.info(`远程编译错误，正在重试第${count}次`);
+    }
+    if (count > 5) {
+        throw new Error('远程编译错误次数过多,已放弃。可以考虑重新保存一次文件或者使用本地编译服务器');
+    }
+    const remote = true;
+    const res = await fetch(remote ? 'https://api.ioflow.link/tsc' : 'http://127.0.0.1:7001/tsc', {
         method: 'POST',
         headers: {
             ...JSON_HEADER,
@@ -81,7 +88,10 @@ const ts2js = async (ts: string) => {
     const text = await res.text();
     const { js } = JSON.parse(text);
     const jsNormal = decodeURIComponent(js);
-    console.info(text.length, js.length, jsNormal.length)
+    // console.info(ts.length, text.length, js.length, jsNormal.length);
+    if (ts.length !== 0 && js.length === 0) { // 使用部署在腾讯云上的服务器会出现一个很奇怪的情况，
+        return ts2js(ts, count + 1);          // 提交ts过去有概率返回空的js，本地不会，明明是一样的代码和系统
+    }
     return jsNormal;
 };
 
