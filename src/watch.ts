@@ -26,6 +26,7 @@ const getPrueTs = async (tsfileName: string) => {
     return { ts, src };
 };
 const baseName = 'operation-component';
+const tsfileName = (comp: IComponent) => `${baseName}/${comp.name}.ts`;
 const fsWatcherQuene = new Array<fs.FSWatcher>();
 /**
  * 清空监听的队列 ，不然在断开连接只会取消最后一次监听的文件且会删除所有文件
@@ -55,13 +56,12 @@ export const watch = async (p = 2363) => {
         });
         s.on(baseName, async (comp: IComponent) => {
             await tryAccessDir(baseName);
-            const tsfileName = `${baseName}/${comp.name}.ts`;
-            console.log(`组件:${comp.name}已选择作为操作组件，使用编辑器打开[${tsfileName}]进行编辑`);
+            console.log(`组件:${comp.name}已选择作为操作组件，使用编辑器打开[${tsfileName(comp)}]进行编辑`);
             await checkDeclear(s);
             if (comp.type === 'middleware') { // 中间件没有远程直接写js,ts就行
-                await operatrionMiddleware(comp, s, tsfileName);
+                await operatrionMiddleware(comp, s);
             } else {
-                await operationIOComponent(comp, s, tsfileName);
+                await operationIOComponent(comp, s);
             }
         });
         loginCert.cookieSrc = cookie;
@@ -71,11 +71,11 @@ export const watch = async (p = 2363) => {
 };
 
 const ts2js = async (ts: string, count = 0): Promise<string> => {
-    if (count !== 0) {
-        console.info(`远程编译错误，正在重试第${count}次`);
-    }
     if (count > 5) {
         throw new Error('远程编译错误次数过多,已放弃。可以考虑重新保存一次文件或者使用本地编译服务器');
+    }
+    if (count !== 0) {
+        console.info(`远程编译错误，正在重试第${count}次`);
     }
     const remote = true;
     const res = await fetch(remote ? 'https://api.ioflow.link/tsc' : 'http://127.0.0.1:7001/tsc', {
@@ -109,12 +109,13 @@ async function checkDeclear(s: Socket.Socket) {
 /**
  * 对中间件进行操作，生成ts，监听改变并编译回传
  */
-async function operatrionMiddleware(comp: IComponent, s: Socket.Socket, tsfileName: string) {
+async function operatrionMiddleware(comp: IComponent, s: Socket.Socket) {
+    const tsPath = tsfileName(comp);
     const text = addDeclear(comp.ts || comp.script); // ts||script 有ts就写入ts，没有js
-    await fsp.writeFile(tsfileName, text);
-    const watcher = fs.watch(tsfileName, {}, debounce(async () => { // 使用节流避免在短时间内的多次修改文件
+    await fsp.writeFile(tsPath, text);
+    const watcher = fs.watch(tsPath, {}, debounce(async () => { // 使用节流避免在短时间内的多次修改文件
         console.info('文件改变开始重新生成');                         // 例如vscode在保存文件时会先写空文件再保存需要保存的文件，触发2次
-        const { ts, src } = await getPrueTs(tsfileName!);           // 使用watchfile仅触发一次是因为太慢
+        const { ts, src } = await getPrueTs(tsPath);           // 使用watchfile仅触发一次是因为太慢
         if (ts === undefined) {
             throw new Error(`分割错误:${src}`);
         }
@@ -127,7 +128,8 @@ async function operatrionMiddleware(comp: IComponent, s: Socket.Socket, tsfileNa
 /**
  * 对流输入输出组件进行操作，生成ts&html，监听改变并编译回传
  */
-async function operationIOComponent(comp: IComponent, s: Socket.Socket, tsfileName: string) {
+async function operationIOComponent(comp: IComponent, s: Socket.Socket) {
+    const tsPath = tsfileName(comp);
     const htmlFileName = `${baseName}/${comp.name}.html`;
     let html: string;
     if (comp.script) { // 使用修改过组件
@@ -155,10 +157,12 @@ async function operationIOComponent(comp: IComponent, s: Socket.Socket, tsfileNa
         doc.body.appendChild(tsDom);
         fs.writeFileSync(htmlFileName, doc.body.innerHTML); // 重写
     }
-    fs.writeFileSync(tsfileName, addDeclear(tsDom.innerHTML));
-    const tsWatcher = fs.watch(tsfileName, debounce(async () => {
+    fs.writeFileSync(tsPath, addDeclear(tsDom.innerHTML));
+    const tsWatcher = fs.watch(tsPath, debounce(async () => {
+        const html = fs.readFileSync(htmlFileName).toString();
+        const doc = parse.parseFromString(html, 'text/html');
         console.info('ts文件改变开始重新编译，并插入到对应的html文件');
-        const { ts, src } = await getPrueTs(tsfileName!);
+        const { ts, src } = await getPrueTs(tsPath);
         if (ts === undefined) {
             throw new Error(`分割错误:${src}`);
         }
